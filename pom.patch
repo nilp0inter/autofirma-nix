@@ -1,0 +1,24 @@
+diff --git a/pom.xml b/pom.xml
+index b228bf1c0..b8a15cd9e 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -236,12 +236,6 @@
+ 				<!-- Aplicaciones -->
+ 				<module>afirma-simple</module>
+ 				<module>afirma-ui-simple-configurator</module>
+-				
+-				<!-- Servicios -->
+-				<module>afirma-server-triphase-signer</module>
+-				<module>afirma-signature-retriever</module>
+-				<module>afirma-signature-storage</module>
+-				
+ 			</modules>
+ 			
+ 			<!-- Las instrucciones de construccion particulares estan dentro de cada modulo.
+@@ -537,4 +531,4 @@
+ 		</profile>
+ 	</profiles>
+ 	
+-</project>
+\ No newline at end of file
++</project>

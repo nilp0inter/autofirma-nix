@@ -5,7 +5,7 @@ let
   source = {
     src = fetchFromGitHub {
       owner = "ctt-gob-es";
-      repo = pname;
+      repo = "clienteafirma";
       rev = "v${version}";
       sha256 = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
     };

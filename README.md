@@ -1,5 +1,5 @@
 # autofirma-nix
-Integra AutoFirma en Nix/NixOS
+Integración de AutoFirma en Nix/NixOS
 
 ## Ejemplo de uso
 ```

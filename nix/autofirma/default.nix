@@ -10,10 +10,10 @@ let
       sha256 = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
     };
     patches = [
-      ./javaversion.patch
-      ./certutilpath.patch
-      ./nsspath.patch
-      ./pom.patch
+      ./patches/javaversion.patch
+      ./patches/certutilpath.patch
+      ./patches/nsspath.patch
+      ./patches/pom.patch
     ];
     postPatch = ''
       substituteInPlace afirma-keystores-mozilla/src/main/java/es/gob/afirma/keystores/mozilla/MozillaKeyStoreUtilitiesUnix.java \

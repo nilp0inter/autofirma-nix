@@ -10,7 +10,7 @@
       let pkgs = nixpkgs.legacyPackages.${system}; in
       {
         packages = rec{
-          autofirma = pkgs.callPackage ./autofirma.nix {};
+          autofirma = pkgs.callPackage ./nix/autofirma/default.nix {};
           default = autofirma;
         };
         apps = rec {

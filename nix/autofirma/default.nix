@@ -7,7 +7,7 @@
   maven,
   nss,
   runtimeShell,
-  JAVAX_NET_SSL_TRUSTSTORE ? "",
+  JAVAX_NET_SSL_TRUSTSTORE ? null,
 }: let
   pname = "autofirma";
   version = "1.8.2";
@@ -113,7 +113,7 @@ in
 
         makeWrapper ${jre}/bin/java $out/bin/autofirma \
           --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar" \
-          --set JAVAX_NET_SSL_TRUSTSTORE "${JAVAX_NET_SSL_TRUSTSTORE}"
+          ${lib.optionalString (JAVAX_NET_SSL_TRUSTSTORE != null) "--set JAVAX_NET_SSL_TRUSTSTORE '${JAVAX_NET_SSL_TRUSTSTORE}'"}
 
         cat > $out/bin/autofirma-setup <<EOF
         #!${runtimeShell}

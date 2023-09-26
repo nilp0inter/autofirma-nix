@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, jre, makeWrapper, maven, nss, runtimeShell }:
+{ lib, stdenv, fetchFromGitHub, jre, makeWrapper, maven, nss, runtimeShell, JAVAX_NET_SSL_TRUSTSTORE ? "" }:
 let
   pname = "autofirma";
   version = "1.8.2";
@@ -101,7 +101,8 @@ stdenv.mkDerivation (source // {
       --replace /usr/bin/autofirma $out/bin/autofirma
 
     makeWrapper ${jre}/bin/java $out/bin/autofirma \
-      --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
+      --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar" \
+      --set JAVAX_NET_SSL_TRUSTSTORE "${JAVAX_NET_SSL_TRUSTSTORE}"
 
     cat > $out/bin/autofirma-setup <<EOF
     #!${runtimeShell}

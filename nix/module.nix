@@ -1,23 +1,27 @@
-inputs: { pkgs, config, lib, ... }:
+inputs: {
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 with lib; let
   cfg = config.programs.autofirma;
   inherit (pkgs.stdenv.hostPlatform) system;
-in
-{
+in {
   options.programs.autofirma = {
     enable = mkEnableOption "Autofirma";
-    package = mkPackageOptionMD inputs.self.packages.${system} "autofirma" { };
+    package = mkPackageOptionMD inputs.self.packages.${system} "autofirma" {};
     trustStore = mkOption {
       type = types.package;
-      default =
-        let
-          caBundle = config.environment.etc."ssl/certs/ca-bundle.crt".source;
-          p11kit = pkgs.p11-kit.overrideAttrs (oldAttrs: {
-            configureFlags = [
-              "--with-trust-paths=${caBundle}"
-            ];
-          });
-        in derivation {
+      default = let
+        caBundle = config.environment.etc."ssl/certs/ca-bundle.crt".source;
+        p11kit = pkgs.p11-kit.overrideAttrs (oldAttrs: {
+          configureFlags = [
+            "--with-trust-paths=${caBundle}"
+          ];
+        });
+      in
+        derivation {
           name = "autofirma-trust-store";
           builder = pkgs.writeShellScript "java-cacerts-builder" ''
             ${p11kit.bin}/bin/trust \
@@ -48,6 +52,6 @@ in
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages = [ cfg.finalPackage ];
+    environment.systemPackages = [cfg.finalPackage];
   };
 }

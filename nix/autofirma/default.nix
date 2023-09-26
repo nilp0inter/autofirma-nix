@@ -125,4 +125,12 @@ in
 
         runHook postInstall
       '';
+      meta = with lib; {
+        description = "Spanish Government digital signature tool";
+        homepage = "https://firmaelectronica.gob.es/Home/Ciudadanos/Aplicaciones-Firma.html";
+        license = with licenses; [ gpl2Only eupl11 ];
+        maintainers = with maintainers; [ nilp0inter ];
+        mainProgram = "autofirma";
+        platforms = platforms.linux;
+      };
     })

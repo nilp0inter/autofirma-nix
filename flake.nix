@@ -26,11 +26,6 @@
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {};
           default = autofirma;
         };
-        apps = rec {
-          DNIeRemote = flake-utils.lib.mkApp {drv = self.packages.${system}.DNIeRemote;};
-          autofirma = flake-utils.lib.mkApp {drv = self.packages.${system}.autofirma;};
-          default = autofirma;
-        };
       }
     ));
 }

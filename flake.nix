@@ -16,13 +16,18 @@
     // (flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        ignoreVulnerable_openssl_1_1 = pkgs.openssl_1_1.overrideAttrs (oldAttrs: rec {
+          meta = (oldAttrs.meta or { }) // { knownVulnerabilities = [ ]; };
+        });
       in {
         formatter = pkgs.alejandra;
         packages = rec {
+          DNIeRemote = pkgs.callPackage ./nix/DNIeRemote/default.nix { openssl_1_1 = ignoreVulnerable_openssl_1_1; };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {};
           default = autofirma;
         };
         apps = rec {
+          DNIeRemote = flake-utils.lib.mkApp {drv = self.packages.${system}.DNIeRemote;};
           autofirma = flake-utils.lib.mkApp {drv = self.packages.${system}.autofirma;};
           default = autofirma;
         };

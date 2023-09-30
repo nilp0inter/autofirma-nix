@@ -1,0 +1,22 @@
+diff --git a/afirma-lib-itext-android/pom.xml b/afirma-lib-itext-android/pom.xml
+index 51e98dd..991c1ae 100644
+--- a/afirma-lib-itext-android/pom.xml
++++ b/afirma-lib-itext-android/pom.xml
+@@ -89,8 +89,8 @@
+ 				<artifactId>maven-compiler-plugin</artifactId>
+ 				<version>3.6.1</version>
+ 				<configuration>
+-					<source>1.6</source>
+-					<target>1.6</target>
++					<source>1.7</source>
++					<target>1.7</target>
+ 				</configuration>
+ 			</plugin>
+ 
+@@ -104,4 +104,4 @@
+ 			</plugin>
+ 		</plugins>
+ 	</build>
+-</project>
+\ No newline at end of file
++</project>

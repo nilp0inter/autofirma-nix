@@ -53,12 +53,11 @@ in {
     };
     firefoxIntegration.enable = mkEnableOption "Firefox integration";
     firefoxIntegration.securityDevice.enable = mkEnableOption "OpenSC security device";
-
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.finalPackage];
     programs.firefox = mkIf cfg.firefoxIntegration.enable {
-      autoConfig = (builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js");
+      autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
       policies = mkIf cfg.firefoxIntegration.securityDevice.enable {
         SecurityDevices = {
           "OpenSC PKCS11 (Autofirma)" = "${pkgs.opensc}/lib/opensc-pkcs11.so";

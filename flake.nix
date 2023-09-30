@@ -14,17 +14,17 @@
       flake = {
         homeManagerModules = rec {
           autofirma = import ./nix/autofirma/hm-module.nix inputs;
-          DNIeRemote = import ./nix/DNIeRemote/hm-module.nix inputs;
+          dnieremote = import ./nix/dnieremote/hm-module.nix inputs;
           default = {
             imports = [
               autofirma
-              DNIeRemote
+              dnieremote
             ];
           };
         };
         nixosModules = rec {
           autofirma = import ./nix/autofirma/module.nix inputs;
-          DNIeRemote = import ./nix/DNIeRemote/module.nix inputs;
+          dnieremote = import ./nix/dnieremote/module.nix inputs;
           default = {
             imports = [
               autofirma
@@ -37,7 +37,7 @@
             meta = (oldAttrs.meta or {}) // {knownVulnerabilities = [];};
           });
         in {
-          DNIeRemote = pkgs.callPackage ./nix/DNIeRemote/default.nix {openssl_1_1 = ignoreVulnerable_openssl_1_1;};
+          dnieremote = pkgs.callPackage ./nix/dnieremote/default.nix {openssl_1_1 = ignoreVulnerable_openssl_1_1;};
         };
       };
       systems = [

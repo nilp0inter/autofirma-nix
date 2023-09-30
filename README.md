@@ -46,14 +46,14 @@ desde un móvil Android usando DNIeRemote.
           programs.autofirma.enable = true;
           programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
 
-          programs.DNIeRemote.enable = true;
+          programs.dnieremote.enable = true;
 
           # Firefox
           programs.firefox.enable = true;
           programs.firefox.policies =  {
             SecurityDevices = {
               "OpenSC PKCS#11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-              "DNIeRemote" = "${config.programs.DNIeRemote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+              "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
             };
           };
         })
@@ -84,7 +84,7 @@ desde un móvil Android usando DNIeRemote.
         enable = true;
       };
     };
-    programs.DNIeRemote.enable = true;
+    programs.dnieremote.enable = true;
 
     programs.firefox = {
       enable = true;
@@ -92,7 +92,7 @@ desde un móvil Android usando DNIeRemote.
         extraPolicies = {
           SecurityDevices = {
             "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-            "DNIeRemote" = "${config.programs.DNIeRemote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+            "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
           };
         };
       });

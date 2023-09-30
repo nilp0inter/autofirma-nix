@@ -5,25 +5,25 @@ inputs: {
   ...
 }:
 with lib; let
-  cfg = config.programs.DNIeRemote;
+  cfg = config.programs.dnieremote;
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
-  options.programs.DNIeRemote = {
+  options.programs.dnieremote = {
     enable = mkEnableOption "DNIeRemote";
-    package = mkPackageOptionMD inputs.self.packages.${system} "DNIeRemote" {};
+    package = mkPackageOptionMD inputs.self.packages.${system} "dnieremote" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;
       default = cfg.package;
       defaultText =
         literalExpression
-        "`programs.DNIeRemote.package` with applied configuration";
+        "`programs.dnieremote.package` with applied configuration";
       description = mdDoc ''
         The DNIeRemote package after applying configuration.
       '';
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages = [cfg.finalPackage];
+    home.packages = [cfg.finalPackage];
   };
 }

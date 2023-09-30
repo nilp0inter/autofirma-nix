@@ -16,7 +16,7 @@
   makeWrapper,
 }:
 stdenv.mkDerivation rec {
-  name = "DNIeRemote";
+  name = "dnieremote";
   version = "1.0-5";
   src = fetchzip {
     url = "https://www.dnie.es/descargas/Apps/DNIeRemote_${version}_amd64.zip";

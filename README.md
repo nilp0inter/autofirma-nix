@@ -3,7 +3,7 @@ Integración de AutoFirma en Nix/NixOS
 
 
 ## Ejemplo de uso
-```
+```console
 $ nix run github:nilp0inter/autofirma-nix
 ```
 
@@ -28,7 +28,7 @@ Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
 desde un móvil Android usando DNIeRemote.
 
 
-```
+```nix
 # flake.nix
 
 {
@@ -73,36 +73,36 @@ sitios web que lo requieran.
 Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
 desde un móvil Android usando DNIeRemote.
 
-```
-  # home.nix
-  { pkgs, config, ... }: {
-    config = {
-      programs.autofirma.enable = true;
-      programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
-      programs.autofirma.firefoxIntegration.profiles = {
-        miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
-          enable = true;
-        };
-      };
-      programs.DNIeRemote.enable = true;
-
-      programs.firefox = {
+```nix
+# home.nix
+{ pkgs, config, ... }: {
+  config = {
+    programs.autofirma.enable = true;
+    programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
+    programs.autofirma.firefoxIntegration.profiles = {
+      miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
         enable = true;
-        package = pkgs.firefox.override (args: {
-          extraPolicies = {
-            SecurityDevices = {
-              "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-              "DNIeRemote" = "${config.programs.DNIeRemote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
-            };
-          };
-        });
-        profiles.miperfil = {
-          id = 0;  # Hace que este perfil sea el perfil por defecto
-          # ... El resto de opciones de configuración de este perfil
-        };
       };
     };
-  }
+    programs.DNIeRemote.enable = true;
+
+    programs.firefox = {
+      enable = true;
+      package = pkgs.firefox.override (args: {
+        extraPolicies = {
+          SecurityDevices = {
+            "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
+            "DNIeRemote" = "${config.programs.DNIeRemote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+          };
+        };
+      });
+      profiles.miperfil = {
+        id = 0;  # Hace que este perfil sea el perfil por defecto
+        # ... El resto de opciones de configuración de este perfil
+      };
+    };
+  };
+}
 ```
 
 ### Creación de certificados

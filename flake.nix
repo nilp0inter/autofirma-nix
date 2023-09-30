@@ -12,6 +12,7 @@
   }:
   flake-parts.lib.mkFlake { inherit inputs; } {
     flake = {
+      homeManagerModules.autofirma = import ./nix/hm-module.nix inputs;
       nixosModules.autofirma = import ./nix/module.nix inputs;
       packages.x86_64-linux = let
         pkgs = nixpkgs.legacyPackages.x86_64-linux;

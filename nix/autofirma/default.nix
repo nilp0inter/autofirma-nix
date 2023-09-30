@@ -56,10 +56,10 @@
       hash = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
     };
     patches = [
-      ./patches/javaversion.patch
-      ./patches/certutilpath.patch
-      ./patches/nsspath.patch
-      ./patches/pom.patch
+      ./patches/clienteafirma/javaversion.patch
+      ./patches/clienteafirma/certutilpath.patch
+      ./patches/clienteafirma/nsspath.patch
+      ./patches/clienteafirma/pom.patch
     ];
     dontBuild = true;
     installPhase = ''

@@ -12,8 +12,25 @@
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
-        homeManagerModules.autofirma = import ./nix/hm-module.nix inputs;
-        nixosModules.autofirma = import ./nix/module.nix inputs;
+        homeManagerModules = rec {
+          autofirma = import ./nix/autofirma/hm-module.nix inputs;
+          DNIeRemote = import ./nix/DNIeRemote/hm-module.nix inputs;
+          default = {
+            imports = [
+              autofirma
+              DNIeRemote
+            ];
+          };
+        };
+        nixosModules = rec {
+          autofirma = import ./nix/autofirma/module.nix inputs;
+          DNIeRemote = import ./nix/DNIeRemote/module.nix inputs;
+          default = {
+            imports = [
+              autofirma
+            ];
+          };
+        };
         packages.x86_64-linux = let
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           ignoreVulnerable_openssl_1_1 = pkgs.openssl_1_1.overrideAttrs (oldAttrs: rec {

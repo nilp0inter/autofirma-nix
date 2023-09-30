@@ -42,6 +42,7 @@ in {
       readOnly = true;
       default = cfg.package.override {
         JAVAX_NET_SSL_TRUSTSTORE = cfg.trustStore;
+        firefox = config.programs.firefox.package;
       };
       defaultText =
         literalExpression

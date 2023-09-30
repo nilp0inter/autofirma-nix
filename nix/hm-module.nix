@@ -14,7 +14,9 @@ in {
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;
-      default = cfg.package;
+      default = cfg.package.override {
+        firefox = config.programs.firefox.package;
+      };
       defaultText =
         literalExpression
         "`programs.autofirma.package` with applied configuration";

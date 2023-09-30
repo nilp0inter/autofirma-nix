@@ -116,3 +116,21 @@ $ autofirma-setup
 ```
 
 Después es necesario reiniciar Firefox para que los cambios surtan efecto.
+
+## Solución de problemas
+
+### Los dispositivos de seguridad no parecen actualizarse
+
+Si se ha instalado AutoFirma y se ha habilitado la integración con Firefox, pero
+Firefox no detecta los dispositivos de seguridad, es posible que sea necesario
+eliminar el fichero `pkcs11.txt` de la carpeta de perfil de Firefox. Por ejemplo,
+si se activa el módulo de Home Manager y su perfil se llama `miperfil`, el fichero
+se encontrará en `~/.mozilla/firefox/miperfil/pkcs11.txt`.
+
+Bastará con eliminarlo y reiniciar Firefox.
+
+```console
+$ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
+$ firefox
+```
+

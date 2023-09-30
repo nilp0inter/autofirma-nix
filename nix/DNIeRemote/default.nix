@@ -33,6 +33,9 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
   postFixup = ''
+    substituteInPlace $out/share/applications/DNIeRemoteWizard.desktop \
+      --replace "Exec=dnieremotewizard" "Exec=$out/bin/dnieremotewizard"
+
     wrapProgram $out/bin/dnieremotewizard \
       --set PATH ${lib.makeBinPath [
         android-tools

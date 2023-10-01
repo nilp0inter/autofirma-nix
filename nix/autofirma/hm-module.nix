@@ -47,7 +47,7 @@ in {
     home.packages = [cfg.finalPackage];
     programs.firefox.profiles = flip mapAttrs cfg.firefoxIntegration.profiles (name: {enable, ...}: {
       settings = mkIf enable {
-        "network.protocol-handler.app.afirma" = "${cfg.package}/bin/autofirma";
+        "network.protocol-handler.app.afirma" = "${cfg.finalPackage}/bin/autofirma";
         "network.protocol-handler.warn-external.afirma" = false;
         "network.protocol-handler.external.afirma" = true;
       };

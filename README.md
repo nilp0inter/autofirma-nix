@@ -67,7 +67,6 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 { pkgs, config, ... }: {
   config = {
     programs.autofirma.enable = true;
-    programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
     programs.autofirma.firefoxIntegration.profiles = {
       miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
         enable = true;

@@ -17,6 +17,83 @@ Una vez habilitado uno de los módulos, si se quiere utilizar AutoFirma en
 Firefox, es necesario ejecutar el comando `autofirma-setup` (ver más abajo).
 
 
+### Configuración de Home Manager
+
+La integración de AutoFirma en Home Manager habilita el comando `autofirma` para
+el firmado de documentos PDF y configura el navegador Firefox (si está habilitado
+mediante la opción `programs.firefox.enable`) para que utilice AutoFirma en
+sitios web que lo requieran.
+
+Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
+desde un móvil Android usando DNIeRemote.
+
+`autofirma-nix` proporciona un módulo de Home Manager que debe ser importado en
+el fichero de configuración de Home Manager.  Dependiendo del tipo de
+instalación de Home Manager la configuración puede variar ligeramente.  A
+continuación se muestran ejemplos para una configuración de tipo standalone.
+
+```nix
+# flake.nix
+
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    autofirma-nix = {
+      url = "github:nilp0inter/autofirma-nix";
+    };
+  };
+
+  outputs = {nixpkgs, home-manager, autofirma-nix, ...}: {
+    homeConfigurations."miusuario" = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+      modules = [
+        autofirma-nix.homeManagerModules.default
+        ./home.nix
+      ];
+    };
+  };
+}
+```
+
+```nix
+# home.nix
+{ pkgs, config, ... }: {
+  config = {
+    programs.autofirma.enable = true;
+    programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
+    programs.autofirma.firefoxIntegration.profiles = {
+      miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
+        enable = true;
+      };
+    };
+    programs.dnieremote.enable = true;
+
+    programs.firefox = {
+      enable = true;
+      package = pkgs.firefox.override (args: {
+        extraPolicies = {
+          SecurityDevices = {
+            "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
+            "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+          };
+        };
+      });
+      profiles.miperfil = {
+        id = 0;  # Hace que este perfil sea el perfil por defecto
+        # ... El resto de opciones de configuración de este perfil
+      };
+    };
+  };
+}
+```
+
 ### Configuración de NixOS
 
 La integración de AutoFirma en NixOS habilita el comando `autofirma` para el
@@ -58,48 +135,6 @@ desde un móvil Android usando DNIeRemote.
           };
         })
       ];
-    };
-  };
-}
-```
-
-### Configuración de Home Manager
-
-La integración de AutoFirma en Home Manager habilita el comando `autofirma` para
-el firmado de documentos PDF y configura el navegador Firefox (si está habilitado
-mediante la opción `programs.firefox.enable`) para que utilice AutoFirma en
-sitios web que lo requieran.
-
-Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
-desde un móvil Android usando DNIeRemote.
-
-```nix
-# home.nix
-{ pkgs, config, ... }: {
-  config = {
-    programs.autofirma.enable = true;
-    programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
-    programs.autofirma.firefoxIntegration.profiles = {
-      miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
-        enable = true;
-      };
-    };
-    programs.dnieremote.enable = true;
-
-    programs.firefox = {
-      enable = true;
-      package = pkgs.firefox.override (args: {
-        extraPolicies = {
-          SecurityDevices = {
-            "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-            "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
-          };
-        };
-      });
-      profiles.miperfil = {
-        id = 0;  # Hace que este perfil sea el perfil por defecto
-        # ... El resto de opciones de configuración de este perfil
-      };
     };
   };
 }

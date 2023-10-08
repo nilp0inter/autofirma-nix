@@ -61,21 +61,6 @@ stdenv.mkDerivation rec {
 
   '';
 
-  # postFixup = ''
-
-  #   substituteInPlace $out/share/applications/configuradorfnmt.desktop \
-  #     --replace "=/usr" "=$out"
-
-  #   substituteInPlace $out/lib/configuradorfnmt/configuradorfnmt.js \
-  #     --replace "/usr/bin/configuradorfnmt" "$out/bin/configuradorfnmt"
-  # '';
-
-  #   wrapProgram $out/bin/dnieremotewizard \
-  #     --set PATH ${lib.makeBinPath [
-  #     android-tools
-  #   ]}
-  # '';
-
   meta = with lib; {
     description = "Application to request the necessary keys for obtaining a digital certificate from the FNMT.";
     homepage = "https://www.sede.fnmt.gob.es/descargas/descarga-software/instalacion-software-generacion-de-claves";

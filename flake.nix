@@ -15,19 +15,24 @@
         homeManagerModules = rec {
           autofirma = import ./nix/autofirma/hm-module.nix inputs;
           dnieremote = import ./nix/dnieremote/hm-module.nix inputs;
+          configuradorfnmt = import ./nix/configuradorfnmt/hm-module.nix inputs;
           default = {
             imports = [
               autofirma
               dnieremote
+              configuradorfnmt
             ];
           };
         };
         nixosModules = rec {
           autofirma = import ./nix/autofirma/module.nix inputs;
           dnieremote = import ./nix/dnieremote/module.nix inputs;
+          configuradorfnmt = import ./nix/configuradorfnmt/module.nix inputs;
           default = {
             imports = [
               autofirma
+              dnieremote
+              configuradorfnmt
             ];
           };
         };
@@ -38,6 +43,7 @@
           });
         in {
           dnieremote = pkgs.callPackage ./nix/dnieremote/default.nix {openssl_1_1 = ignoreVulnerable_openssl_1_1;};
+          configuradorfnmt = pkgs.callPackage ./nix/configuradorfnmt/default.nix {};
         };
       };
       systems = [

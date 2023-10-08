@@ -7,8 +7,7 @@
   maven,
   nss,
   firefox,
-  runtimeShell,
-  JAVAX_NET_SSL_TRUSTSTORE ? null,
+  runtimeShell
 }: let
   pname = "autofirma";
   version = "1.8.2";
@@ -190,8 +189,7 @@ in
 
         makeWrapper ${jre}/bin/java $out/bin/autofirma \
           --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
-          --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar" \
-          ${lib.optionalString (JAVAX_NET_SSL_TRUSTSTORE != null) "--set JAVAX_NET_SSL_TRUSTSTORE '${JAVAX_NET_SSL_TRUSTSTORE}'"}
+          --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
         cat > $out/bin/autofirma-setup <<EOF
         #!${runtimeShell}

@@ -180,10 +180,3 @@ Bastará con eliminarlo y reiniciar Firefox.
 $ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
 $ firefox
 ```
-
-### El Configurador FNMT no es capaz de instalar el certificado en Firefox
-
-Debido a que el código fuente del Configurador FNMT no está disponible, no es
-posible aplicar los parches necesarios para que funcione correctamente con
-NixOS.  Sin embargo, es posible llegar a descargar el certificado e importarlo
-manualmente en Firefox u otro navegador o tarjeta inteligente.

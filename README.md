@@ -1,10 +1,13 @@
 # autofirma-nix
-Integración de AutoFirma en Nix/NixOS
+
+Este repositorio contiene derivaciones de Nix, módulos de NixOS y Home Manager
+para integrar AutoFirma, DNIeRemote y el Configurador FNMT en NixOS y Home
+Manager.
 
 
 ## Ejemplo de uso
 ```console
-$ nix run github:nilp0inter/autofirma-nix
+$ nix run github:nilp0inter/autofirma-nix#dnieremote
 ```
 
 ## Autofirma en NixOS y Home Manager
@@ -74,6 +77,13 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
     };
     programs.dnieremote.enable = true;
 
+    programs.configuradorfnmt.enable = true;
+    programs.configuradorfnmt.firefoxIntegration.profiles = {
+      miperfil = {  # El nombre del perfil de firefox donde se habilitará el Configurador FNMT
+        enable = true;
+      };
+    };
+
     programs.firefox = {
       enable = true;
       package = pkgs.firefox.override (args: {
@@ -124,6 +134,9 @@ desde un móvil Android usando DNIeRemote.
 
           programs.dnieremote.enable = true;
 
+          programs.configuradorfnmt.enable = true;
+          programs.configuradorfnmt.firefoxIntegration.enable = true;  # Para que Firefox utilice el Configurador FNMT
+
           # Firefox
           programs.firefox.enable = true;
           programs.firefox.policies =  {
@@ -168,3 +181,9 @@ $ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
 $ firefox
 ```
 
+### El Configurador FNMT no es capaz de instalar el certificado en Firefox
+
+Debido a que el código fuente del Configurador FNMT no está disponible, no es
+posible aplicar los parches necesarios para que funcione correctamente con
+NixOS.  Sin embargo, es posible llegar a descargar el certificado e importarlo
+manualmente en Firefox u otro navegador o tarjeta inteligente.

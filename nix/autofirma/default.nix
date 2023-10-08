@@ -188,6 +188,7 @@ in
           --replace /usr/bin/autofirma $out/bin/autofirma
 
         makeWrapper ${jre}/bin/java $out/bin/autofirma \
+          --prefix LD_LIBRARY_PATH ':' "$firefoxLibs" \
           --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
           --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
@@ -201,6 +202,9 @@ in
 
         runHook postInstall
       '';
+
+      firefoxLibs = firefox.libs;
+
       meta = with lib; {
         description = "Spanish Government digital signature tool";
         homepage = "https://firmaelectronica.gob.es/Home/Ciudadanos/Aplicaciones-Firma.html";

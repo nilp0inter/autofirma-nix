@@ -5,21 +5,21 @@ inputs: {
   ...
 }:
 with lib; let
-  cfg = config.programs.dnieremote;
+  cfg = config.programs.configuradorfnmt;
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
-  options.programs.dnieremote = {
-    enable = mkEnableOption "DNIeRemote";
-    package = mkPackageOptionMD inputs.self.packages.${system} "dnieremote" {};
+  options.programs.configuradorfnmt = {
+    enable = mkEnableOption "configuradorfnmt";
+    package = mkPackageOptionMD inputs.self.packages.${system} "configuradorfnmt" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;
       default = cfg.package;
       defaultText =
         literalExpression
-        "`programs.dnieremote.package` with applied configuration";
+        "`programs.configuradorfnmt.package` with applied configuration";
       description = mdDoc ''
-        The DNIeRemote package after applying configuration.
+        The configuradorfnmt package after applying configuration.
       '';
     };
     firefoxIntegration.enable = mkEnableOption "Firefox integration";

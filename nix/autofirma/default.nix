@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   jre,
+  makeDesktopItem,
   makeWrapper,
   maven,
   nss,
@@ -57,7 +58,6 @@
     patches = [
       ./patches/clienteafirma/javaversion.patch
       ./patches/clienteafirma/certutilpath.patch
-      ./patches/clienteafirma/nsspath.patch
       ./patches/clienteafirma/pom.patch
     ];
     dontBuild = true;
@@ -65,11 +65,8 @@
       mkdir -p $out/
       cp -R . $out/
     '';
-    postPatch = ''
-      substituteInPlace afirma-keystores-mozilla/src/main/java/es/gob/afirma/keystores/mozilla/MozillaKeyStoreUtilitiesUnix.java \
-        --replace '@nsspath' '${nss}/lib' \
-        --replace '@firefoxpath' '${firefox}/lib/firefox'
 
+    postPatch = ''
       substituteInPlace afirma-ui-simple-configurator/src/main/java/es/gob/afirma/standalone/configurator/ConfiguratorFirefoxLinux.java \
         --replace '@certutilpath' '${nss.tools}/bin/certutil'
     '';
@@ -134,83 +131,111 @@
       outputHashMode = "recursive";
       outputHash = "sha256-m23F+jZV9P3jzDdnzk2luI9nQMxu1VKotSPJzShr1ss=";
     });
+
+    meta = with lib; {
+      description = "Spanish Government digital signature tool";
+      homepage = "https://firmaelectronica.gob.es/Home/Ciudadanos/Aplicaciones-Firma.html";
+      license = with licenses; [gpl2Only eupl11];
+      maintainers = with maintainers; [nilp0inter];
+      mainProgram = "autofirma";
+      platforms = platforms.linux;
+    };
+
+    thisPkg = stdenv.mkDerivation (source
+      // {
+        pname = pname;
+        version = version;
+        inherit meta;
+
+        nativeBuildInputs = [makeWrapper maven];
+
+        propagatedBuildInputs = [nss.tools];
+
+        buildPhase = ''
+          runHook preBuild
+
+          mvnDeps=$(cp -dpR ${afirma-libs}/.m2 ./ && chmod +w -R .m2 && pwd)
+
+          cp -dpR ${jmulticard-src} ./jmulticard
+          chmod +w -R jmulticard
+          cd jmulticard
+          mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -DskipTests
+          cd ..
+
+
+          cp -dpR ${clienteafirma-external-src} ./clienteafirma-external
+          chmod +w -R clienteafirma-external
+          cd clienteafirma-external
+          mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -DskipTests
+          cd ..
+
+          cp -dpR ${clienteafirma-src} ./clienteafirma
+          chmod +w -R clienteafirma
+          cd clienteafirma
+          mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=dev -DskipTests
+          mvn clean package -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=install -DskipTests
+
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          mkdir -p $out/bin $out/lib/AutoFirma
+          install -Dm644 afirma-simple/target/AutoFirma.jar $out/lib/AutoFirma
+          install -Dm644 afirma-ui-simple-configurator/target/AutoFirmaConfigurador.jar $out/lib/AutoFirma
+          cp -r afirma-simple-installer/linux/instalador_deb/src/usr/lib $out
+          cp -r afirma-simple-installer/linux/instalador_deb/src/usr/share $out
+          cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
+
+          substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
+            --replace /usr/bin/autofirma $out/bin/autofirma
+
+          makeWrapper ${jre}/bin/java $out/bin/autofirma \
+            --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
+            --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
+
+          cat > $out/bin/autofirma-setup <<EOF
+          #!${runtimeShell}
+          ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
+          chmod +x \$HOME/.afirma/AutoFirma/script.sh
+          \$HOME/.afirma/AutoFirma/script.sh
+          EOF
+          chmod +x $out/bin/autofirma-setup
+
+          runHook postInstall
+        '';
+
+      });
 in
-  stdenv.mkDerivation (source
-    // {
-      pname = pname;
-      version = version;
+  stdenv.mkDerivation {
+    name = pname;
+    version = version;
+    inherit meta;
 
-      nativeBuildInputs = [makeWrapper maven];
+    nativeBuildInputs = [makeWrapper];
 
-      propagatedBuildInputs = [nss.tools];
+    desktopItem = (makeDesktopItem {
+      name = "AutoFirma";
+      desktopName = "AutoFirma";
+      genericName = "Herramienta de firma";
+      exec = "autofirma %u";
+      icon = "${thisPkg}/lib/AutoFirma/AutoFirma.png";
+      mimeTypes = ["x-scheme-handler/afirma"];
+      categories = ["Office" "X-Utilities" "X-Signature" "Java"];
+      startupNotify = true;
+      startupWMClass = "autofirma";
+    });
 
-      buildPhase = ''
-        runHook preBuild
+    buildCommand = ''
+      mkdir -p $out/bin
+      makeWrapper ${thisPkg}/bin/autofirma $out/bin/autofirma \
+        --prefix LD_LIBRARY_PATH ':' "$firefoxLibs"
+      install -D -t $out/share/applications $desktopItem/share/applications/*
+      mkdir -p $out/etc/firefox/pref
+      ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+      ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+    '';
 
-        mvnDeps=$(cp -dpR ${afirma-libs}/.m2 ./ && chmod +w -R .m2 && pwd)
+    firefoxLibs = firefox.libs;
 
-        cp -dpR ${jmulticard-src} ./jmulticard
-        chmod +w -R jmulticard
-        cd jmulticard
-        mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -DskipTests
-        cd ..
-
-
-        cp -dpR ${clienteafirma-external-src} ./clienteafirma-external
-        chmod +w -R clienteafirma-external
-        cd clienteafirma-external
-        mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -DskipTests
-        cd ..
-
-        cp -dpR ${clienteafirma-src} ./clienteafirma
-        chmod +w -R clienteafirma
-        cd clienteafirma
-        mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=dev -DskipTests
-        mvn clean package -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=install -DskipTests
-
-        runHook postBuild
-      '';
-
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/bin $out/lib/AutoFirma
-        install -Dm644 afirma-simple/target/AutoFirma.jar $out/lib/AutoFirma
-        install -Dm644 afirma-ui-simple-configurator/target/AutoFirmaConfigurador.jar $out/lib/AutoFirma
-        cp -r afirma-simple-installer/linux/instalador_deb/src/usr/lib $out
-        cp -r afirma-simple-installer/linux/instalador_deb/src/usr/share $out
-        cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
-
-        substituteInPlace $out/share/applications/afirma.desktop \
-          --replace /usr/bin/autofirma $out/bin/autofirma \
-          --replace /usr/lib/AutoFirma $out/lib/AutoFirma
-
-        substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
-          --replace /usr/bin/autofirma $out/bin/autofirma
-
-        makeWrapper ${jre}/bin/java $out/bin/autofirma \
-          --prefix LD_LIBRARY_PATH ':' "$firefoxLibs" \
-          --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
-          --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
-
-        cat > $out/bin/autofirma-setup <<EOF
-        #!${runtimeShell}
-        ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
-        chmod +x \$HOME/.afirma/AutoFirma/script.sh
-        \$HOME/.afirma/AutoFirma/script.sh
-        EOF
-        chmod +x $out/bin/autofirma-setup
-
-        runHook postInstall
-      '';
-
-      firefoxLibs = firefox.libs;
-
-      meta = with lib; {
-        description = "Spanish Government digital signature tool";
-        homepage = "https://firmaelectronica.gob.es/Home/Ciudadanos/Aplicaciones-Firma.html";
-        license = with licenses; [gpl2Only eupl11];
-        maintainers = with maintainers; [nilp0inter];
-        mainProgram = "autofirma";
-        platforms = platforms.linux;
-      };
-    })
+  }

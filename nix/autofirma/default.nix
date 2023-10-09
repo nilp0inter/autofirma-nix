@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  jre8,
+  jre,
   makeDesktopItem,
   makeWrapper,
   maven,
@@ -190,13 +190,13 @@
           substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
             --replace /usr/bin/autofirma $out/bin/autofirma
 
-          makeWrapper ${jre8}/bin/java $out/bin/autofirma \
+          makeWrapper ${jre}/bin/java $out/bin/autofirma \
             --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
             --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
           cat > $out/bin/autofirma-setup <<EOF
           #!${runtimeShell}
-          ${jre8}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
+          ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
           chmod +x \$HOME/.afirma/AutoFirma/script.sh
           \$HOME/.afirma/AutoFirma/script.sh
           EOF

@@ -29,7 +29,7 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.finalPackage];
     programs.firefox = mkIf cfg.firefoxIntegration.enable {
-      autoConfig = builtins.readFile ${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js;
+      autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
     };
   };
 }

@@ -56,10 +56,10 @@ let
   desktopItem = (makeDesktopItem {
     name = pname;
     exec = "${pname} %u";
-    icon = "${pname}.png";
+    icon = "${thisPkg}/lib/${pname}/${pname}.png";
     desktopName = "Configurador FNMT";
     genericName = "Configurador FNMT";
-    categories = [ "GNOME" "Application" "Office" ];
+    categories = [ "Office" "X-Utilities" ];
     mimeTypes = [ "x-scheme-handler/fnmtcr" ];
   });
 in buildFHSEnv {

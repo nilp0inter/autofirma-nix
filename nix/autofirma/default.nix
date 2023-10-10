@@ -230,7 +230,7 @@ in
       mkdir -p $out/bin
       makeWrapper ${thisPkg}/bin/autofirma $out/bin/autofirma \
         --prefix LD_LIBRARY_PATH ':' "$firefoxLibs" \
-        --prefix LD_LIBRARY_PATH ':' "${firefox}/lib"
+        --prefix LD_LIBRARY_PATH ':' "${firefox}/lib/firefox"
       install -D -t $out/share/applications $desktopItem/share/applications/*
       mkdir -p $out/etc/firefox/pref
       ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js

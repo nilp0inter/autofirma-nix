@@ -1,6 +1,7 @@
 {
   lib,
   stdenv,
+  buildFHSEnv,
   fetchFromGitHub,
   jre,
   makeDesktopItem,
@@ -206,37 +207,32 @@
         '';
 
       });
-in
-  stdenv.mkDerivation {
-    name = pname;
-    version = version;
-    inherit meta;
 
-    nativeBuildInputs = [makeWrapper];
+  desktopItem = (makeDesktopItem {
+    name = "AutoFirma";
+    desktopName = "AutoFirma";
+    genericName = "Herramienta de firma";
+    exec = "autofirma %u";
+    icon = "${thisPkg}/lib/AutoFirma/AutoFirma.png";
+    mimeTypes = ["x-scheme-handler/afirma"];
+    categories = ["Office" "X-Utilities" "X-Signature" "Java"];
+    startupNotify = true;
+    startupWMClass = "autofirma";
+  });
+in buildFHSEnv {
+  name = pname;
+  inherit meta;
+  targetPkgs = (pkgs: [
+    firefox
+    pkgs.nss
+  ]);
+  runScript = lib.getExe thisPkg;
+  extraInstallCommands = ''
+    mkdir -p "$out/share/applications"
+    cp "${desktopItem}/share/applications/"* $out/share/applications
 
-    desktopItem = (makeDesktopItem {
-      name = "AutoFirma";
-      desktopName = "AutoFirma";
-      genericName = "Herramienta de firma";
-      exec = "autofirma %u";
-      icon = "${thisPkg}/lib/AutoFirma/AutoFirma.png";
-      mimeTypes = ["x-scheme-handler/afirma"];
-      categories = ["Office" "X-Utilities" "X-Signature" "Java"];
-      startupNotify = true;
-      startupWMClass = "autofirma";
-    });
-
-    buildCommand = ''
-      mkdir -p $out/bin
-      makeWrapper ${thisPkg}/bin/autofirma $out/bin/autofirma \
-        --prefix LD_LIBRARY_PATH ':' "$firefoxLibs" \
-        --prefix LD_LIBRARY_PATH ':' "${firefox}/lib/firefox"
-      install -D -t $out/share/applications $desktopItem/share/applications/*
-      mkdir -p $out/etc/firefox/pref
-      ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-      ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
-    '';
-
-    firefoxLibs = firefox.libs;
-
-  }
+    mkdir -p $out/etc/firefox/pref
+    ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+    ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+  '';
+}

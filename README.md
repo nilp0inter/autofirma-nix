@@ -49,6 +49,7 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 
     autofirma-nix = {
       url = "github:nilp0inter/autofirma-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -70,7 +71,6 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 { pkgs, config, ... }: {
   config = {
     programs.autofirma.enable = true;
-    programs.autofirma.fixJavaCerts = true;
     programs.autofirma.firefoxIntegration.profiles = {
       miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
         enable = true;
@@ -131,6 +131,7 @@ desde un móvil Android usando DNIeRemote.
         autofirma-nix.nixosModules.default
         ({ pkgs, config, ... }: {
           programs.autofirma.enable = true;
+          programs.autofirma.fixJavaCerts = true;
           programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
 
           programs.dnieremote.enable = true;

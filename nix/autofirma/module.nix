@@ -10,6 +10,7 @@ with lib; let
 in {
   options.programs.autofirma = {
     enable = mkEnableOption "Autofirma";
+    fixJavaCerts = mkEnableOption "Fix Java certificates";
     package = mkPackageOptionMD inputs.self.packages.${system} "autofirma" {};
     finalPackage = mkOption {
       type = types.package;
@@ -26,9 +27,31 @@ in {
     };
     firefoxIntegration.enable = mkEnableOption "Firefox integration";
   };
-  config = mkIf cfg.enable {
-    environment.systemPackages = [cfg.finalPackage];
-    programs.firefox = mkIf cfg.firefoxIntegration.enable {
+  config.environment.systemPackages = mkIf cfg.enable [cfg.finalPackage];
+  config.environment.variables = mkIf cfg.fixJavaCerts {
+    JAVAX_NET_SSL_TRUSTSTORE = let
+      caBundle = config.environment.etc."ssl/certs/ca-bundle.crt".source;
+      p11kit = pkgs.p11-kit.overrideAttrs (oldAttrs: {
+        configureFlags = [
+          "--with-trust-paths=${caBundle}"
+        ];
+      });
+    in
+    derivation {
+      name = "java-cacerts";
+      builder = pkgs.writeShellScript "java-cacerts-builder" ''
+        ${p11kit.bin}/bin/trust \
+          extract \
+          --format=java-cacerts \
+          --purpose=server-auth \
+          $out
+      '';
+      system = "x86_64-linux";
+    };
+  };
+
+  config.programs = mkIf cfg.enable {
+    firefox = mkIf cfg.firefoxIntegration.enable {
       autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
     };
   };

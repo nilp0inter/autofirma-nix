@@ -87,14 +87,12 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 
     programs.firefox = {
       enable = true;
-      package = pkgs.firefox.override (args: {
-        extraPolicies = {
-          SecurityDevices = {
-            "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-            "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
-          };
+      policies = {
+        SecurityDevices = {
+          "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
+          "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
         };
-      });
+      };
       profiles.miperfil = {
         id = 0;  # Hace que este perfil sea el perfil por defecto
         # ... El resto de opciones de configuración de este perfil

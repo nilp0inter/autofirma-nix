@@ -131,7 +131,7 @@
       dontFixup = true;
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
-      outputHash = "sha256-m23F+jZV9P3jzDdnzk2luI9nQMxu1VKotSPJzShr1ss=";
+      outputHash = "sha256-mIgarm9CUnaD2Bc4hbtKYT+lPHZyeq5WMKz0gWYTbxA=";
     });
 
     meta = with lib; {

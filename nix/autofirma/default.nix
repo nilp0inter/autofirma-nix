@@ -60,6 +60,7 @@
       hash = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
     };
     patches = [
+      ./patches/clienteafirma/detect_java_version.patch
       ./patches/clienteafirma/pr-367.patch
       ./patches/clienteafirma/javaversion.patch
       ./patches/clienteafirma/certutilpath.patch

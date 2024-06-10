@@ -49,6 +49,8 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 
     autofirma-nix = {
       url = "github:nilp0inter/autofirma-nix";
+      # Para NixOS 23.11
+      # url = "github:nilp0inter/autofirma-nix/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

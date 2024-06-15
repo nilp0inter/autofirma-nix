@@ -1,7 +1,7 @@
 {
   description = "Un flake para integrar AutoFirma con Nix/NixOS";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 

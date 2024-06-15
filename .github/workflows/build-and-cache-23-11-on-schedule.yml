@@ -1,0 +1,24 @@
+name: Build and Cache 23.11 on Schedule
+
+on:
+  schedule:
+    - cron: "11 23 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-cache:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: release-23.11
+    - uses: cachix/install-nix-action@v27
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: cachix/cachix-action@v15
+      with:
+        name: autofirma-nix
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix

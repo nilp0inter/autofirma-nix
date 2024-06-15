@@ -22,4 +22,6 @@ jobs:
       with:
         name: autofirma-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix flake metadata --update-input nixpkgs
     - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+    - run: git branch update-nixpkgs && git add flake.lock && git commit -m "update nixpkgs" && gh pr create -B main --title "Update flake.lock"

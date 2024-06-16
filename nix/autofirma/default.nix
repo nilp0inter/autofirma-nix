@@ -227,21 +227,20 @@
     startupNotify = true;
     startupWMClass = "autofirma";
   });
-in thisPkg
-# in buildFHSEnv {
-#   name = pname;
-#   inherit meta;
-#   targetPkgs = (pkgs: [
-#     firefox
-#     pkgs.nss
-#   ]);
-#   runScript = lib.getExe thisPkg;
-#   extraInstallCommands = ''
-#     mkdir -p "$out/share/applications"
-#     cp "${desktopItem}/share/applications/"* $out/share/applications
+in buildFHSEnv {
+  name = pname;
+  inherit meta;
+  targetPkgs = (pkgs: [
+    firefox
+    pkgs.nss
+  ]);
+  runScript = lib.getExe thisPkg;
+  extraInstallCommands = ''
+    mkdir -p "$out/share/applications"
+    cp "${desktopItem}/share/applications/"* $out/share/applications
 
-#     mkdir -p $out/etc/firefox/pref
-#     ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-#     ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
-#   '';
-# }
+    mkdir -p $out/etc/firefox/pref
+    ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+    ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+  '';
+}

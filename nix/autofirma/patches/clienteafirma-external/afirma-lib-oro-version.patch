@@ -1,0 +1,13 @@
+diff --git a/afirma-lib-jmimemagic/pom.xml b/afirma-lib-jmimemagic/pom.xml
+index 2094fa4..f89f930 100644
+--- a/afirma-lib-jmimemagic/pom.xml
++++ b/afirma-lib-jmimemagic/pom.xml
+@@ -58,7 +58,7 @@
+ 		<dependency>
+ 			<groupId>es.gob.afirma.lib</groupId>
+ 			<artifactId>afirma-lib-oro</artifactId>
+-			<version>0.0.7</version>
++			<version>0.0.8</version>
+ 		</dependency>
+ 		
+ 		<dependency>

@@ -1,7 +1,39 @@
 diff --git a/pom.xml b/pom.xml
-index e0eb3e668..aede118bb 100644
+index 7d6ca9813..5f7589bba 100644
 --- a/pom.xml
 +++ b/pom.xml
+@@ -51,7 +51,7 @@
+ 	
+ 	<properties>
+ 		<clienteafirma.version>1.8.3</clienteafirma.version>
+-		<jmulticard.version>1.8</jmulticard.version>
++		<jmulticard.version>1.9</jmulticard.version>
+ 		<afirma.lib.itex.version>1.6</afirma.lib.itex.version>
+ 		<spongycastle.version>1.58.0.0</spongycastle.version>
+ 		<afirma.legible.version>1_8_3</afirma.legible.version>
+@@ -91,19 +91,19 @@
+ 			<dependency>
+ 				<groupId>es.gob.afirma.lib</groupId>
+ 				<artifactId>afirma-lib-jmimemagic</artifactId>
+-				<version>0.0.7</version>
++				<version>0.0.8</version>
+ 			</dependency>
+ 			
+ 			<dependency>
+ 				<groupId>es.gob.afirma.lib</groupId>
+ 				<artifactId>afirma-lib-oro</artifactId>
+-				<version>0.0.7</version>
++				<version>0.0.8</version>
+ 			</dependency>
+ 
+ 			<dependency>
+ 				<groupId>es.gob.afirma.lib</groupId>
+ 				<artifactId>afirma-lib-juniversalchardet</artifactId>
+-				<version>0.0.7</version>
++				<version>0.0.8</version>
+ 			</dependency>
+ 
+ 			<dependency>
 @@ -206,8 +206,8 @@
  						<groupId>org.apache.maven.plugins</groupId>
  						<artifactId>maven-compiler-plugin</artifactId>

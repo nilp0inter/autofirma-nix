@@ -12,14 +12,14 @@
   runtimeShell
 }: let
   pname = "autofirma";
-  version = "1.8.3";
+  version = "1.8.2";
   jmulticard-src = stdenv.mkDerivation {
     name = "jmulticard-src";
     src = fetchFromGitHub {
       owner = "ctt-gob-es";
       repo = "jmulticard";
-      rev = "v1.9";
-      hash = "sha256-lMkQ+2oL37voZ7NpsxGJm9qDGWEsi6WQDRy9GFsIX10=";
+      rev = "v1.8";
+      hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
     };
     patches = [
       ./patches/jmulticard/javaversion.patch
@@ -37,12 +37,11 @@
       name = "clienteafirma-external";
       owner = "ctt-gob-es";
       repo = "clienteafirma-external";
-      rev = "c674ad5b07c66907994f63ba73ca61c9c49c8d2c";
-      hash = "sha256-b4z9uDcPj+bBhqB2caaal9vpMErVCHx/IMJKJuhtU2c=";
+      rev = "v1.0.5";
+      hash = "sha256-cCH4iOvtAZ+9VsHG+MrfU5DkJ+cvXZvDTRDIamuBZZw=";
     };
     patches = [
       ./patches/clienteafirma-external/javaversion.patch
-      ./patches/clienteafirma-external/afirma-lib-oro-version.patch
     ];
     dontBuild = true;
     installPhase = ''
@@ -58,7 +57,7 @@
       owner = "ctt-gob-es";
       repo = "clienteafirma";
       rev = "v${version}";
-      hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
+      hash = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
     };
     patches = [
       ./patches/clienteafirma/detect_java_version.patch
@@ -66,7 +65,6 @@
       ./patches/clienteafirma/javaversion.patch
       ./patches/clienteafirma/certutilpath.patch
       ./patches/clienteafirma/pom.patch
-      ./patches/clienteafirma/afirma-core-pom.patch
     ];
     dontBuild = true;
     installPhase = ''
@@ -180,7 +178,6 @@
           cp -dpR ${clienteafirma-src} ./clienteafirma
           chmod +w -R clienteafirma
           cd clienteafirma
-
           mvn clean install -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=dev -DskipTests
           mvn clean package -o -nsu "-Dmaven.repo.local=$mvnDeps/.m2" -Denv=install -DskipTests
 
@@ -227,21 +224,20 @@
     startupNotify = true;
     startupWMClass = "autofirma";
   });
-in thisPkg
-# in buildFHSEnv {
-#   name = pname;
-#   inherit meta;
-#   targetPkgs = (pkgs: [
-#     firefox
-#     pkgs.nss
-#   ]);
-#   runScript = lib.getExe thisPkg;
-#   extraInstallCommands = ''
-#     mkdir -p "$out/share/applications"
-#     cp "${desktopItem}/share/applications/"* $out/share/applications
+in buildFHSEnv {
+  name = pname;
+  inherit meta;
+  targetPkgs = (pkgs: [
+    firefox
+    pkgs.nss
+  ]);
+  runScript = lib.getExe thisPkg;
+  extraInstallCommands = ''
+    mkdir -p "$out/share/applications"
+    cp "${desktopItem}/share/applications/"* $out/share/applications
 
-#     mkdir -p $out/etc/firefox/pref
-#     ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-#     ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
-#   '';
-# }
+    mkdir -p $out/etc/firefox/pref
+    ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+    ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+  '';
+}

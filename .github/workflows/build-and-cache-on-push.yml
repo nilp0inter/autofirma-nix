@@ -23,9 +23,3 @@ jobs:
         name: autofirma-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v6
-      with:
-        commit-message: "chore: update nixpkgs"
-        title: Update nixpkgs
-        branch: update-nixpkgs

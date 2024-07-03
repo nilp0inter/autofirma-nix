@@ -10,7 +10,7 @@ with lib; let
 in {
   options.programs.dnieremote = {
     enable = mkEnableOption "DNIeRemote";
-    package = mkPackageOptionMD inputs.self.packages.${system} "dnieremote" {};
+    package = mkPackageOption inputs.self.packages.${system} "dnieremote" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;

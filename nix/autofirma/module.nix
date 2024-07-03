@@ -11,7 +11,7 @@ in {
   options.programs.autofirma = {
     enable = mkEnableOption "Autofirma";
     fixJavaCerts = mkEnableOption "Fix Java certificates";
-    package = mkPackageOptionMD inputs.self.packages.${system} "autofirma" {};
+    package = mkPackageOption inputs.self.packages.${system} "autofirma" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;

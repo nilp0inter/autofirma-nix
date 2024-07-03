@@ -10,7 +10,7 @@ with lib; let
 in {
   options.programs.configuradorfnmt = {
     enable = mkEnableOption "configuradorfnmt";
-    package = mkPackageOptionMD inputs.self.packages.${system} "configuradorfnmt" {};
+    package = mkPackageOption inputs.self.packages.${system} "configuradorfnmt" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;

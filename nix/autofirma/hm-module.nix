@@ -10,7 +10,7 @@ with lib; let
 in {
   options.programs.autofirma = {
     enable = mkEnableOption "Autofirma";
-    package = mkPackageOptionMD inputs.self.packages.${system} "autofirma" {};
+    package = mkPackageOption inputs.self.packages.${system} "autofirma" {};
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;

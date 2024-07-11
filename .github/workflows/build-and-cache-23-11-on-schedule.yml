@@ -1,4 +1,4 @@
-name: Build and Cache 23.11 on Schedule
+name: release-23.11
 
 on:
   schedule:

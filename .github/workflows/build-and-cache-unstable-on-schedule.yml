@@ -1,4 +1,4 @@
-name: Build and Cache Unstable on Schedule
+name: unstable
 
 on:
   schedule:

@@ -1,0 +1,44 @@
+name: Build and Cache on Push
+
+on:
+  push:
+    branches:
+      - chore/patch-hashes
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-cache:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v27
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: cachix/cachix-action@v15
+      with:
+        name: autofirma-nix
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: build autofirma-nix
+      shell: /usr/bin/bash -o pipefail -e {0}
+      run: |
+        # nix flake metadata --update-input nixpkgs
+        nix build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
+        nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+    - uses: tibdex/github-app-token@v1
+      if: failure()
+      id: generate-token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+    - name: Create Pull Request
+      if: failure()
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ steps.generate-token.outputs.token }}
+        commit-message: 'bump: hashes'
+        add-paths: |
+          nix/
+          flake.lock

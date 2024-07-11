@@ -21,6 +21,36 @@ jobs:
       with:
         name: autofirma-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake metadata --update-input nixpkgs
-    - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote
-    - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+    - name: build autofirma-nix
+      shell: /usr/bin/bash -o pipefail -e {0}
+      run: |
+        nix flake metadata --update-input nixpkgs
+        nix build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
+        nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+    - uses: tibdex/github-app-token@v1
+      if: failure()
+      id: generate-token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+    - name: Create Pull Request
+      if: failure()
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ steps.generate-token.outputs.token }}
+        assignees: |
+          nilp0inter
+          panchoh
+        commit-message: 'fix: update derivation hashes & bump flake.lock'
+        title: Updated hashes for ${{ github.ref_name }}
+        body: |
+          This is an automatic update. Please test before merging!
+          
+          To test, run the following command:
+
+          ```console
+          nix run github:nilp0inter/autofirma-nix/pull/<this_pr_number>/head#autofirma
+          ```
+        add-paths: |
+          nix/
+          flake.lock

@@ -1,5 +1,9 @@
 # autofirma-nix
 
+[![release-23.11](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-23-11-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-23-11-on-schedule.yml)
+[![release-24.05](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-05-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-05-on-schedule.yml)
+[![unstable](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml)
+
 Este repositorio contiene derivaciones de Nix, módulos de NixOS y Home Manager
 para integrar AutoFirma, DNIeRemote y el Configurador FNMT en NixOS y Home
 Manager.

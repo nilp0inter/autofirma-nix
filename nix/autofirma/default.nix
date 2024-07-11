@@ -19,7 +19,7 @@
       owner = "ctt-gob-es";
       repo = "jmulticard";
       rev = "v1.8";
-      hash = "sha256-sCqMK3FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
+      hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
     };
     patches = [
       ./patches/jmulticard/javaversion.patch

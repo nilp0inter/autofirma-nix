@@ -59,7 +59,20 @@
       in {
         formatter = pkgs.alejandra;
         packages = rec {
-          autofirma = pkgs.callPackage ./nix/autofirma/default.nix {};
+          pom-tools-update-java-version = pkgs.callPackage ./nix/pom-tools/update-java-version.nix {};
+          pom-tools-update-pkg-version = pkgs.callPackage ./nix/pom-tools/update-pkg-version.nix {};
+          pom-tools-update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
+
+          jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
+            inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+          };
+          clienteafirma-external = pkgs.callPackage ./nix/autofirma/dependencies/clienteafirma-external {
+            inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+          };
+          autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
+            inherit jmulticard clienteafirma-external pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+          };
+
           default = autofirma;
         };
       };

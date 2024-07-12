@@ -41,7 +41,7 @@ jobs:
         assignees: |
           nilp0inter
         commit-message: 'fix: update derivation hashes & bump flake.lock'
-        title: Updated hashes for ${{ github.ref_name }}
+        title: 'Updated hashes for `release-23.11`'
         body: |
           This is an automatic update. Please test before merging!
           

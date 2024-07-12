@@ -42,7 +42,7 @@ jobs:
           nilp0inter
           panchoh
         commit-message: 'fix: update derivation hashes & bump flake.lock'
-        title: Updated hashes for ${{ github.ref_name }}
+        title: 'Updated hashes for `unstable`'
         body: |
           This is an automatic update. Please test before merging!
           

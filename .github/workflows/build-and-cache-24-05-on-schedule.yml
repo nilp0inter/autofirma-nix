@@ -42,7 +42,7 @@ jobs:
           nilp0inter
           CesarGallego
         commit-message: 'fix: update derivation hashes & bump flake.lock'
-        title: Updated hashes for ${{ github.ref_name }}
+        title: 'Updated hashes for `release-24.05`'
         body: |
           This is an automatic update. Please test before merging!
           

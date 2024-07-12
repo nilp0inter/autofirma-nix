@@ -1,7 +1,9 @@
-{ writeShellApplication, xmlstarlet }:
+{
+  writeShellApplication,
+  xmlstarlet,
+}:
 writeShellApplication {
   name = "update-pkg-version";
-  runtimeInputs = [ xmlstarlet ];
+  runtimeInputs = [xmlstarlet];
   text = builtins.readFile ./update-pkg-version.sh;
 }
-

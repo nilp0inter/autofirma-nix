@@ -15,7 +15,7 @@
   pom-tools-update-dependency-version-by-groupId,
   jmulticard,
   clienteafirma-external,
-  rsync
+  rsync,
 }: let
   name = "autofirma";
   version = "1.8.2";
@@ -120,12 +120,12 @@
   };
 
   thisPkg = stdenv.mkDerivation {
-      pname = name;
-      version = version;
+    pname = name;
+    version = version;
 
-      src = clienteafirma-src;
+    src = clienteafirma-src;
 
-      inherit meta;
+    inherit meta;
 
     nativeBuildInputs = [
       makeWrapper
@@ -133,10 +133,10 @@
       rsync
     ];
 
-      propagatedBuildInputs = [nss.tools];
+    propagatedBuildInputs = [nss.tools];
 
-      buildPhase = ''
-        cp -r ${clienteafirma-dependencies}/.m2 ./ && chmod -R u+w .m2
+    buildPhase = ''
+      cp -r ${clienteafirma-dependencies}/.m2 ./ && chmod -R u+w .m2
 
       rsync -av ${jmulticard}/.m2/repository/ .m2/repository
       rsync -av ${clienteafirma-external}/.m2/repository/ .m2/repository
@@ -144,36 +144,35 @@
       mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests -Denv=install
     '';
 
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/bin $out/lib/AutoFirma
-        install -Dm644 afirma-simple/target/AutoFirma.jar $out/lib/AutoFirma
-        install -Dm644 afirma-ui-simple-configurator/target/AutoFirmaConfigurador.jar $out/lib/AutoFirma
-        cp -r afirma-simple-installer/linux/instalador_deb/src/usr/lib $out
-        cp -r afirma-simple-installer/linux/instalador_deb/src/usr/share $out
-        cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/bin $out/lib/AutoFirma
+      install -Dm644 afirma-simple/target/AutoFirma.jar $out/lib/AutoFirma
+      install -Dm644 afirma-ui-simple-configurator/target/AutoFirmaConfigurador.jar $out/lib/AutoFirma
+      cp -r afirma-simple-installer/linux/instalador_deb/src/usr/lib $out
+      cp -r afirma-simple-installer/linux/instalador_deb/src/usr/share $out
+      cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
 
-        substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
-          --replace /usr/bin/autofirma $out/bin/autofirma
+      substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
+        --replace /usr/bin/autofirma $out/bin/autofirma
 
-        makeWrapper ${jre}/bin/java $out/bin/autofirma \
-          --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
-          --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
+      makeWrapper ${jre}/bin/java $out/bin/autofirma \
+        --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
+        --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
-        cat > $out/bin/autofirma-setup <<EOF
-        #!${runtimeShell}
-        ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
-        chmod +x \$HOME/.afirma/AutoFirma/script.sh
-        \$HOME/.afirma/AutoFirma/script.sh
-        EOF
-        chmod +x $out/bin/autofirma-setup
+      cat > $out/bin/autofirma-setup <<EOF
+      #!${runtimeShell}
+      ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
+      chmod +x \$HOME/.afirma/AutoFirma/script.sh
+      \$HOME/.afirma/AutoFirma/script.sh
+      EOF
+      chmod +x $out/bin/autofirma-setup
 
-        runHook postInstall
-      '';
+      runHook postInstall
+    '';
+  };
 
-    };
-
-  desktopItem = (makeDesktopItem {
+  desktopItem = makeDesktopItem {
     name = "AutoFirma";
     desktopName = "AutoFirma";
     genericName = "Herramienta de firma";
@@ -183,21 +182,22 @@
     categories = ["Office" "X-Utilities" "X-Signature" "Java"];
     startupNotify = true;
     startupWMClass = "autofirma";
-  });
-in buildFHSEnv {
-  name = name;
-  inherit meta;
-  targetPkgs = (pkgs: [
-    firefox
-    pkgs.nss
-  ]);
-  runScript = lib.getExe thisPkg;
-  extraInstallCommands = ''
-    mkdir -p "$out/share/applications"
-    cp "${desktopItem}/share/applications/"* $out/share/applications
+  };
+in
+  buildFHSEnv {
+    name = name;
+    inherit meta;
+    targetPkgs = pkgs: [
+      firefox
+      pkgs.nss
+    ];
+    runScript = lib.getExe thisPkg;
+    extraInstallCommands = ''
+      mkdir -p "$out/share/applications"
+      cp "${desktopItem}/share/applications/"* $out/share/applications
 
-    mkdir -p $out/etc/firefox/pref
-    ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-    ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
-  '';
-}
+      mkdir -p $out/etc/firefox/pref
+      ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+      ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+    '';
+  }

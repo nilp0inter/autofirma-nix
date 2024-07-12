@@ -1,6 +1,9 @@
-{ writeShellApplication, xmlstarlet }:
+{
+  writeShellApplication,
+  xmlstarlet,
+}:
 writeShellApplication {
   name = "update-java-version";
-  runtimeInputs = [ xmlstarlet ];
+  runtimeInputs = [xmlstarlet];
   text = builtins.readFile ./update-java-version.sh;
 }

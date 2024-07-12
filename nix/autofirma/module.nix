@@ -37,17 +37,17 @@ in {
         ];
       });
     in
-    derivation {
-      name = "java-cacerts";
-      builder = pkgs.writeShellScript "java-cacerts-builder" ''
-        ${p11kit.bin}/bin/trust \
-          extract \
-          --format=java-cacerts \
-          --purpose=server-auth \
-          $out
-      '';
-      system = "x86_64-linux";
-    };
+      derivation {
+        name = "java-cacerts";
+        builder = pkgs.writeShellScript "java-cacerts-builder" ''
+          ${p11kit.bin}/bin/trust \
+            extract \
+            --format=java-cacerts \
+            --purpose=server-auth \
+            $out
+        '';
+        system = "x86_64-linux";
+      };
   };
 
   config.programs = mkIf cfg.enable {

@@ -69,7 +69,7 @@
       runHook preInstall
 
       rm -rf $out/.m2/respository/es/gob/afirma/lib
-      
+
       find $out -type f \( \
         -name \*.lastUpdated \
         -o -name resolver-status.properties \
@@ -84,45 +84,45 @@
     outputHashMode = "recursive";
     outputHash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
   };
+in
+  stdenv.mkDerivation {
+    pname = "${name}-m2-repository";
+    version = version;
 
-in stdenv.mkDerivation {
-  pname = "${name}-m2-repository";
-  version = version;
+    groupId = "es.gob.afirma.lib";
+    finalVersion = "${version}-autofirma-nix";
 
-  groupId = "es.gob.afirma.lib";
-  finalVersion = "${version}-autofirma-nix";
+    src = clienteafirma-external-src;
 
-  src = clienteafirma-external-src;
+    nativeBuildInputs = [maven rsync];
 
-  nativeBuildInputs = [ maven rsync ];
+    buildPhase = ''
+      cp -r ${clienteafirma-external-dependencies}/.m2 ./ && chmod -R u+w .m2
 
-  buildPhase = ''
-    cp -r ${clienteafirma-external-dependencies}/.m2 ./ && chmod -R u+w .m2
+      mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests
+    '';
 
-    mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests
-  '';
+    installPhase = ''
+      mkdir -p $out/.m2/repository/es/gob/afirma/lib
 
-  installPhase = ''
-    mkdir -p $out/.m2/repository/es/gob/afirma/lib
+      rm -rf ./.m2/repository/es/gob/afirma/lib
 
-    rm -rf ./.m2/repository/es/gob/afirma/lib
+      mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests
 
-    mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests
+      rsync -av ./.m2/repository/es/gob/afirma/lib $out/.m2/repository/es/gob/afirma/
 
-    rsync -av ./.m2/repository/es/gob/afirma/lib $out/.m2/repository/es/gob/afirma/
+      find $out -type f \( \
+        -name \*.lastUpdated \
+        -o -name resolver-status.properties \
+        -o -name _remote.repositories \) \
+        -delete
+    '';
 
-    find $out -type f \( \
-      -name \*.lastUpdated \
-      -o -name resolver-status.properties \
-      -o -name _remote.repositories \) \
-      -delete
-  '';
-
-  meta = with lib; {
-    description = "External libraries used by Cliente @firma";
-    homepage = "https://github.com/ctt-gob-es/clienteafirma-external";
-    license = with licenses; [gpl2Only eupl11];
-    maintainers = with maintainers; [nilp0inter];
-    platforms = platforms.linux;
-  };
-}
+    meta = with lib; {
+      description = "External libraries used by Cliente @firma";
+      homepage = "https://github.com/ctt-gob-es/clienteafirma-external";
+      license = with licenses; [gpl2Only eupl11];
+      maintainers = with maintainers; [nilp0inter];
+      platforms = platforms.linux;
+    };
+  }

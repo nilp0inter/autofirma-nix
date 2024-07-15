@@ -62,6 +62,7 @@
           pom-tools-update-java-version = pkgs.callPackage ./nix/pom-tools/update-java-version.nix {};
           pom-tools-update-pkg-version = pkgs.callPackage ./nix/pom-tools/update-pkg-version.nix {};
           pom-tools-update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
+          pom-tools-remove-module-on-profile = pkgs.callPackage ./nix/pom-tools/remove-module-on-profile.nix {};
 
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
@@ -70,7 +71,7 @@
             inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
-            inherit jmulticard clienteafirma-external pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+            inherit jmulticard clienteafirma-external pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId pom-tools-remove-module-on-profile;
           };
 
           default = autofirma;

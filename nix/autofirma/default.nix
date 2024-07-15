@@ -13,12 +13,13 @@
   pom-tools-update-java-version,
   pom-tools-update-pkg-version,
   pom-tools-update-dependency-version-by-groupId,
+  pom-tools-remove-module-on-profile,
   jmulticard,
   clienteafirma-external,
   rsync,
 }: let
   name = "autofirma";
-  version = "1.8.2";
+  version = "1.8.3";
 
   clienteafirma-src = stdenv.mkDerivation {
     name = "clienteafirma-src";
@@ -28,13 +29,14 @@
       owner = "ctt-gob-es";
       repo = "clienteafirma";
       rev = "v${version}";
-      hash = "sha256-YtGtTeWDWwCCIikxs6Cyrypb0EBX2Q2sa3CBCmC6kK8=";
+      hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
     };
 
     nativeBuildInputs = [
       pom-tools-update-java-version
       pom-tools-update-pkg-version
       pom-tools-update-dependency-version-by-groupId
+      pom-tools-remove-module-on-profile
     ];
 
     patches = [
@@ -53,9 +55,14 @@
     postPatch = ''
       update-java-version "1.8"
       update-pkg-version "${version}-autofirma-nix"
+
       update-dependency-version-by-groupId "${clienteafirma-external.groupId}" "${clienteafirma-external.finalVersion}"
       update-dependency-version-by-groupId "${jmulticard.groupId}" "${jmulticard.finalVersion}"
       update-dependency-version-by-groupId "es.gob.afirma" "${version}-autofirma-nix"
+
+      remove-module-on-profile "env-install" "afirma-server-triphase-signer"
+      remove-module-on-profile "env-install" "afirma-signature-retriever"
+      remove-module-on-profile "env-install" "afirma-signature-storage"
 
       substituteInPlace afirma-ui-simple-configurator/src/main/java/es/gob/afirma/standalone/configurator/ConfiguratorFirefoxLinux.java \
         --replace '@certutilpath' '${nss.tools}/bin/certutil'
@@ -84,8 +91,9 @@
 
       chmod -R +w $out/.m2/repository
 
-      mvn install dependency:go-offline -Dmaven.repo.local=$out/.m2/repository -DskipTests -Denv=dev
-      mvn package dependency:go-offline -Dmaven.repo.local=$out/.m2/repository -DskipTests -Denv=install
+      mvn install -Dmaven.repo.local=$out/.m2/repository -DskipTests -Denv=dev  # Some install modules are only declared in the dev profile
+                                                                                # but are needed in the install profile.  We delete them later.
+      mvn dependency:go-offline -Dmaven.repo.local=$out/.m2/repository -DskipTests -Denv=install
 
       runHook postBuild
     '';
@@ -93,7 +101,7 @@
     installPhase = ''
       runHook preInstall
 
-      rm -rf $out/.m2/repository/es/gob/afirma/{jmulticard,lib}
+      rm -rf $out/.m2/repository/es/gob/afirma  # Remove the modules that should be compiled in the build derivation. See above.
 
       find $out -type f \( \
         -name \*.lastUpdated \
@@ -107,7 +115,7 @@
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-CKat91Dlz8icAp3iD2sQYJbrcRMACe9YpavhhmgB/Ew=";
+    outputHash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
   };
 
   meta = with lib; {
@@ -136,11 +144,15 @@
     propagatedBuildInputs = [nss.tools];
 
     buildPhase = ''
-      cp -r ${clienteafirma-dependencies}/.m2 ./ && chmod -R u+w .m2
+      cp -r ${clienteafirma-dependencies}/.m2 ./
 
       rsync -av ${jmulticard}/.m2/repository/ .m2/repository
       rsync -av ${clienteafirma-external}/.m2/repository/ .m2/repository
 
+      chmod -R u+w .m2
+
+      mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests -Denv=dev  # As in the dependencies derivation, some modules are only declared in the dev profile
+                                                                                       # but are needed in the install profile.
       mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests -Denv=install
     '';
 
@@ -184,20 +196,20 @@
     startupWMClass = "autofirma";
   };
 in
-  buildFHSEnv {
-    name = name;
-    inherit meta;
-    targetPkgs = pkgs: [
-      firefox
-      pkgs.nss
-    ];
-    runScript = lib.getExe thisPkg;
-    extraInstallCommands = ''
-      mkdir -p "$out/share/applications"
-      cp "${desktopItem}/share/applications/"* $out/share/applications
+buildFHSEnv {
+  name = name;
+  inherit meta;
+  targetPkgs = pkgs: [
+    firefox
+    pkgs.nss
+  ];
+  runScript = lib.getExe thisPkg;
+  extraInstallCommands = ''
+    mkdir -p "$out/share/applications"
+    cp "${desktopItem}/share/applications/"* $out/share/applications
 
-      mkdir -p $out/etc/firefox/pref
-      ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-      ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
-    '';
-  }
+    mkdir -p $out/etc/firefox/pref
+    ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+    ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
+  '';
+}

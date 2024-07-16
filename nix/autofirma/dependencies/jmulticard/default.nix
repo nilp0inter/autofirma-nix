@@ -3,14 +3,13 @@
   stdenv,
   fetchFromGitHub,
   maven,
-  pom-tools-update-java-version,
-  pom-tools-update-pkg-version,
-  pom-tools-update-dependency-version-by-groupId,
+  pom-tools,
   rsync,
+  src-rev,
+  src-hash,
+  maven-dependencies-hash ? ""
 }: let
   name = "jmulticard";
-
-  version = "1.8";
 
   jmulticard-src = stdenv.mkDerivation {
     name = "${name}-src";
@@ -18,14 +17,14 @@
     src = fetchFromGitHub {
       owner = "ctt-gob-es";
       repo = "jmulticard";
-      rev = "v${version}";
-      hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
+      rev = src-rev;
+      hash = src-hash;
     };
 
     nativeBuildInputs = [
-      pom-tools-update-java-version
-      pom-tools-update-pkg-version
-      pom-tools-update-dependency-version-by-groupId
+      pom-tools.update-java-version
+      pom-tools.update-pkg-version
+      pom-tools.update-dependency-version-by-groupId
     ];
 
     dontBuild = true;
@@ -34,8 +33,8 @@
       find . -name '*.jar' -delete  # just in case
 
       update-java-version "1.8"
-      update-pkg-version "${version}-autofirma-nix"
-      update-dependency-version-by-groupId "es.gob.afirma.jmulticard" "${version}-autofirma-nix"
+      update-pkg-version "${src-rev}-autofirma-nix"
+      update-dependency-version-by-groupId "es.gob.afirma.jmulticard" "${src-rev}-autofirma-nix"
     '';
 
     installPhase = ''
@@ -82,15 +81,15 @@
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-qI6gYbGKTQ4Q4tV8NI37TSd3eQTyHHgndUGS943UvNU=";
+    outputHash = maven-dependencies-hash;
   };
 in
   stdenv.mkDerivation {
     pname = "${name}-m2-repository";
-    version = version;
+    version = src-rev;
 
     groupId = "es.gob.afirma.jmulticard";
-    finalVersion = "${version}-autofirma-nix";
+    finalVersion = "${src-rev}-autofirma-nix";
 
     src = jmulticard-src;
 

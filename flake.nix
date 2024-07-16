@@ -59,21 +59,36 @@
       in {
         formatter = pkgs.alejandra;
         packages = rec {
-          pom-tools-update-java-version = pkgs.callPackage ./nix/pom-tools/update-java-version.nix {};
-          pom-tools-update-pkg-version = pkgs.callPackage ./nix/pom-tools/update-pkg-version.nix {};
-          pom-tools-update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
-          pom-tools-remove-module-on-profile = pkgs.callPackage ./nix/pom-tools/remove-module-on-profile.nix {};
-
+          pom-tools = {
+            update-java-version = pkgs.callPackage ./nix/pom-tools/update-java-version.nix {};
+            update-pkg-version = pkgs.callPackage ./nix/pom-tools/update-pkg-version.nix {};
+            update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
+            remove-module-on-profile = pkgs.callPackage ./nix/pom-tools/remove-module-on-profile.nix {};
+          };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
-            inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+            inherit pom-tools;
+
+            src-rev = "v1.8";
+            src-hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
+
+            maven-dependencies-hash = "sha256-qI6gYbGKTQ4Q4tV8NI37TSd3eQTyHHgndUGS943UvNU=";
           };
           clienteafirma-external = pkgs.callPackage ./nix/autofirma/dependencies/clienteafirma-external {
-            inherit pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId;
+            inherit pom-tools;
+
+            src-rev = "OT_14395";
+            src-hash = "sha256-iS3I6zIxuKG133s/FqDlXZzOZ2ZOJcqZK9X6Tv3+3lc=";
+
+            maven-dependencies-hash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
-            inherit jmulticard clienteafirma-external pom-tools-update-java-version pom-tools-update-pkg-version pom-tools-update-dependency-version-by-groupId pom-tools-remove-module-on-profile;
-          };
+            inherit jmulticard clienteafirma-external pom-tools;
 
+            src-rev = "v1.8.3";
+            src-hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
+
+            maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
+          };
           default = autofirma;
         };
       };

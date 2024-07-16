@@ -3,14 +3,13 @@
   stdenv,
   fetchFromGitHub,
   maven,
-  pom-tools-update-java-version,
-  pom-tools-update-pkg-version,
-  pom-tools-update-dependency-version-by-groupId,
+  pom-tools,
   rsync,
+  src-rev,
+  src-hash,
+  maven-dependencies-hash ? ""
 }: let
   name = "clienteafirma-external";
-
-  version = "1.0.6";
 
   clienteafirma-external-src = stdenv.mkDerivation {
     name = "${name}-src";
@@ -18,14 +17,14 @@
     src = fetchFromGitHub {
       owner = "ctt-gob-es";
       repo = "clienteafirma-external";
-      rev = "OT_14395";
-      hash = "sha256-iS3I6zIxuKG133s/FqDlXZzOZ2ZOJcqZK9X6Tv3+3lc=";
+      rev = src-rev;
+      hash = src-hash;
     };
 
     nativeBuildInputs = [
-      pom-tools-update-java-version
-      pom-tools-update-pkg-version
-      pom-tools-update-dependency-version-by-groupId
+      pom-tools.update-java-version
+      pom-tools.update-pkg-version
+      pom-tools.update-dependency-version-by-groupId
     ];
 
     dontBuild = true;
@@ -34,8 +33,8 @@
       find . -name '*.jar' -delete  # just in case
 
       update-java-version "1.8"
-      update-pkg-version "${version}-autofirma-nix"
-      update-dependency-version-by-groupId "es.gob.afirma.lib" "${version}-autofirma-nix"
+      update-pkg-version "${src-rev}-autofirma-nix"
+      update-dependency-version-by-groupId "es.gob.afirma.lib" "${src-rev}-autofirma-nix"
     '';
 
     installPhase = ''
@@ -82,15 +81,15 @@
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
+    outputHash = maven-dependencies-hash;
   };
 in
   stdenv.mkDerivation {
     pname = "${name}-m2-repository";
-    version = version;
+    version = src-rev;
 
     groupId = "es.gob.afirma.lib";
-    finalVersion = "${version}-autofirma-nix";
+    finalVersion = "${src-rev}-autofirma-nix";
 
     src = clienteafirma-external-src;
 

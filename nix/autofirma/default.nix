@@ -10,16 +10,15 @@
   nss,
   firefox,
   runtimeShell,
-  pom-tools-update-java-version,
-  pom-tools-update-pkg-version,
-  pom-tools-update-dependency-version-by-groupId,
-  pom-tools-remove-module-on-profile,
+  pom-tools,
   jmulticard,
   clienteafirma-external,
   rsync,
+  src-rev,
+  src-hash,
+  maven-dependencies-hash ? "",
 }: let
   name = "autofirma";
-  version = "1.8.3";
 
   clienteafirma-src = stdenv.mkDerivation {
     name = "clienteafirma-src";
@@ -28,15 +27,15 @@
       name = "clienteafirma";
       owner = "ctt-gob-es";
       repo = "clienteafirma";
-      rev = "v${version}";
-      hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
+      rev = src-rev;
+      hash = src-hash;
     };
 
     nativeBuildInputs = [
-      pom-tools-update-java-version
-      pom-tools-update-pkg-version
-      pom-tools-update-dependency-version-by-groupId
-      pom-tools-remove-module-on-profile
+      pom-tools.update-java-version
+      pom-tools.update-pkg-version
+      pom-tools.update-dependency-version-by-groupId
+      pom-tools.remove-module-on-profile
     ];
 
     patches = [
@@ -54,11 +53,11 @@
 
     postPatch = ''
       update-java-version "1.8"
-      update-pkg-version "${version}-autofirma-nix"
+      update-pkg-version "${src-rev}-autofirma-nix"
 
       update-dependency-version-by-groupId "${clienteafirma-external.groupId}" "${clienteafirma-external.finalVersion}"
       update-dependency-version-by-groupId "${jmulticard.groupId}" "${jmulticard.finalVersion}"
-      update-dependency-version-by-groupId "es.gob.afirma" "${version}-autofirma-nix"
+      update-dependency-version-by-groupId "es.gob.afirma" "${src-rev}-autofirma-nix"
 
       remove-module-on-profile "env-install" "afirma-server-triphase-signer"
       remove-module-on-profile "env-install" "afirma-signature-retriever"
@@ -115,7 +114,7 @@
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
+    outputHash = maven-dependencies-hash;
   };
 
   meta = with lib; {
@@ -129,7 +128,7 @@
 
   thisPkg = stdenv.mkDerivation {
     pname = name;
-    version = version;
+    version = src-rev;
 
     src = clienteafirma-src;
 

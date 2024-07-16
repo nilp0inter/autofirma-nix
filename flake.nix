@@ -84,7 +84,7 @@
             src-rev = "v1.8";
             src-hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
 
-            maven-dependencies-hash = "sha256-qI6gYbGKTQ4Q4tV8NI37TSd3eQTyHHgndUGS943UvNU=";
+            maven-dependencies-hash = "sha256-BH4aIhx6nWdSH1Wy3u6bEC4FvDKEPZd6qM4ujkEjD7g=";
           };
           clienteafirma-external = pkgs.callPackage ./nix/autofirma/dependencies/clienteafirma-external {
             inherit pom-tools;
@@ -92,7 +92,7 @@
             src-rev = "OT_14395";
             src-hash = "sha256-iS3I6zIxuKG133s/FqDlXZzOZ2ZOJcqZK9X6Tv3+3lc=";
 
-            maven-dependencies-hash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
+            maven-dependencies-hash = "sha256-OLJqkNdtknJw8ZpsAbDOki5vK5+ctz3FYlEbdDkCHtY=";
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
             inherit jmulticard clienteafirma-external pom-tools;
@@ -100,7 +100,7 @@
             src-rev = "v1.8.3";
             src-hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
 
-            maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
+            maven-dependencies-hash = "sha256-fuXvnYIQn0ahY+Gl6wdlWNYH7NHykW1Bsz22O90suak=";
           };
           default = self'.packages.autofirma;
         };

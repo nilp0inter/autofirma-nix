@@ -25,6 +25,7 @@
       pom-tools.update-java-version
       pom-tools.update-pkg-version
       pom-tools.update-dependency-version-by-groupId
+      pom-tools.reset-project-build-timestamp
     ];
 
     dontBuild = true;
@@ -35,6 +36,7 @@
       update-java-version "1.8"
       update-pkg-version "${src-rev}-autofirma-nix"
       update-dependency-version-by-groupId "es.gob.afirma.lib" "${src-rev}-autofirma-nix"
+      reset-project-build-timestamp
     '';
 
     installPhase = ''
@@ -93,7 +95,11 @@ in
 
     src = clienteafirma-external-src;
 
-    nativeBuildInputs = [maven rsync];
+    nativeBuildInputs = [
+      maven
+      rsync
+      pom-tools.reset-maven-metadata-local-timestamp
+    ];
 
     buildPhase = ''
       cp -r ${clienteafirma-external-dependencies}/.m2 ./ && chmod -R u+w .m2
@@ -115,6 +121,11 @@ in
         -o -name resolver-status.properties \
         -o -name _remote.repositories \) \
         -delete
+    '';
+
+    fixupPhase = ''
+      cd $out/.m2/repository
+      reset-maven-metadata-local-timestamp
     '';
 
     meta = with lib; {

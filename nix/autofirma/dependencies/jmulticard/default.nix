@@ -25,6 +25,7 @@
       pom-tools.update-java-version
       pom-tools.update-pkg-version
       pom-tools.update-dependency-version-by-groupId
+      pom-tools.reset-project-build-timestamp
     ];
 
     dontBuild = true;
@@ -35,6 +36,7 @@
       update-java-version "1.8"
       update-pkg-version "${src-rev}-autofirma-nix"
       update-dependency-version-by-groupId "es.gob.afirma.jmulticard" "${src-rev}-autofirma-nix"
+      reset-project-build-timestamp
     '';
 
     installPhase = ''
@@ -96,6 +98,7 @@ in
     nativeBuildInputs = [
       rsync
       maven
+      pom-tools.reset-maven-metadata-local-timestamp
     ];
 
     buildPhase = ''
@@ -118,6 +121,11 @@ in
         -o -name resolver-status.properties \
         -o -name _remote.repositories \) \
         -delete
+    '';
+
+    fixupPhase = ''
+      cd $out/.m2/repository
+      reset-maven-metadata-local-timestamp
     '';
 
     meta = with lib; {

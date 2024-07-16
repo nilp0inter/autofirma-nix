@@ -36,6 +36,7 @@
       pom-tools.update-pkg-version
       pom-tools.update-dependency-version-by-groupId
       pom-tools.remove-module-on-profile
+      pom-tools.reset-project-build-timestamp
     ];
 
     patches = [
@@ -62,6 +63,8 @@
       remove-module-on-profile "env-install" "afirma-server-triphase-signer"
       remove-module-on-profile "env-install" "afirma-signature-retriever"
       remove-module-on-profile "env-install" "afirma-signature-storage"
+
+      reset-project-build-timestamp
 
       substituteInPlace afirma-ui-simple-configurator/src/main/java/es/gob/afirma/standalone/configurator/ConfiguratorFirefoxLinux.java \
         --replace '@certutilpath' '${nss.tools}/bin/certutil'

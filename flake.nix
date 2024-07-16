@@ -53,6 +53,7 @@
       perSystem = {
         config,
         system,
+        self',
         ...
       }: let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -91,7 +92,18 @@
 
             maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
           };
-          default = autofirma;
+          default = self'.packages.autofirma;
+        };
+        checks = {
+          autofirma-sign = pkgs.runCommand "autofirma-sign" { } ''
+            mkdir -p $out
+            echo "NixOS Autofirma Sign Test" > document.txt
+
+            ${pkgs.openssl}/bin/openssl req -x509 -newkey rsa:2048 -keyout private.key -out certificate.crt -days 365 -nodes -subj "/C=ES/O=TEST AUTOFIRMA NIX/OU=DNIE/CN=AC DNIE 004" -passout pass:1234
+            ${pkgs.openssl}/bin/openssl pkcs12 -export -out certificate.p12 -inkey private.key -in certificate.crt -name "testcert" -password pass:1234
+
+            ${self'.packages.autofirma}/bin/autofirma sign -store pkcs12:certificate.p12 -i document.txt -o document.txt.sign -filter alias.contains=testcert -password 1234 -xml
+          '';
         };
       };
     };

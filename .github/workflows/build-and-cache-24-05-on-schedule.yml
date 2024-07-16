@@ -26,6 +26,7 @@ jobs:
       run: |
         nix flake metadata --update-input nixpkgs
         nix build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
+        nix flake check
         nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
     - uses: tibdex/github-app-token@v1
       if: failure()

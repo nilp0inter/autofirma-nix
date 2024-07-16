@@ -1,5 +1,15 @@
 {
   description = "Un flake para integrar AutoFirma con Nix/NixOS";
+
+  nixConfig = {
+    extra-substituters = [
+      "https://autofirma-nix.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "autofirma-nix.cachix.org-1:cDC9Dtee+HJ7QZcM8s36836scXyRToqNX/T+yvjiI0E="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";

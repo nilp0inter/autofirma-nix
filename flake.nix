@@ -65,6 +65,7 @@
             update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
             remove-module-on-profile = pkgs.callPackage ./nix/pom-tools/remove-module-on-profile.nix {};
             reset-project-build-timestamp = pkgs.callPackage ./nix/pom-tools/reset-project-build-timestamp.nix {};
+            reset-maven-metadata-local-timestamp = pkgs.callPackage ./nix/pom-tools/reset-maven-metadata-local-timestamp.nix {};
           };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 shopt -s globstar
 
 xmlstarlet edit \

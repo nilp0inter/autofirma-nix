@@ -98,6 +98,7 @@ in
     nativeBuildInputs = [
       rsync
       maven
+      pom-tools.reset-maven-metadata-local-timestamp
     ];
 
     buildPhase = ''
@@ -120,6 +121,11 @@ in
         -o -name resolver-status.properties \
         -o -name _remote.repositories \) \
         -delete
+    '';
+
+    fixupPhase = ''
+      cd $out/.m2/repository
+      reset-maven-metadata-local-timestamp
     '';
 
     meta = with lib; {

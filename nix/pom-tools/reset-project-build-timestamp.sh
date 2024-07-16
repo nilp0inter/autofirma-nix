@@ -1,3 +1,5 @@
+shopt -s globstar
+
 xmlstarlet \
 	edit \
 	--inplace \

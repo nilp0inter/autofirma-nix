@@ -95,7 +95,11 @@ in
 
     src = clienteafirma-external-src;
 
-    nativeBuildInputs = [maven rsync];
+    nativeBuildInputs = [
+      maven
+      rsync
+      pom-tools.reset-maven-metadata-local-timestamp
+    ];
 
     buildPhase = ''
       cp -r ${clienteafirma-external-dependencies}/.m2 ./ && chmod -R u+w .m2
@@ -117,6 +121,11 @@ in
         -o -name resolver-status.properties \
         -o -name _remote.repositories \) \
         -delete
+    '';
+
+    fixupPhase = ''
+      cd $out/.m2/repository
+      reset-maven-metadata-local-timestamp
     '';
 
     meta = with lib; {

@@ -88,8 +88,9 @@
 
       mkdir -p $out/.m2/repository
 
-      rsync -av ${jmulticard}/.m2/repository/ $out/.m2/repository/
-      rsync -av ${clienteafirma-external}/.m2/repository/ $out/.m2/repository/
+      rsync -av ${jmulticard}/.m2/repository/ \
+                ${clienteafirma-external}/.m2/repository/ \
+                $out/.m2/repository/
 
       chmod -R +w $out/.m2/repository
 
@@ -148,8 +149,9 @@
     buildPhase = ''
       cp -r ${clienteafirma-dependencies}/.m2 ./
 
-      rsync -av ${jmulticard}/.m2/repository/ .m2/repository
-      rsync -av ${clienteafirma-external}/.m2/repository/ .m2/repository
+      rsync -av ${jmulticard}/.m2/repository/ \
+                ${clienteafirma-external}/.m2/repository/ \
+                .m2/repository
 
       chmod -R u+w .m2
 

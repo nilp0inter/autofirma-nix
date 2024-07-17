@@ -9,7 +9,7 @@ with lib; let
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
   options.programs.autofirma = {
-    enable = mkEnableOption "Autofirma";
+    enable = mkEnableOption "AutoFirma";
     fixJavaCerts = mkEnableOption "Fix Java certificates";
     package = mkPackageOption inputs.self.packages.${system} "autofirma" {};
     finalPackage = mkOption {
@@ -22,7 +22,7 @@ in {
         literalExpression
         "`programs.autofirma.package` with applied configuration";
       description = mdDoc ''
-        The Autofirma package after applying configuration.
+        The AutoFirma package after applying configuration.
       '';
     };
     firefoxIntegration.enable = mkEnableOption "Firefox integration";

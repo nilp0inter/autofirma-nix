@@ -9,7 +9,7 @@ with lib; let
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
   options.programs.autofirma = {
-    enable = mkEnableOption "Autofirma";
+    enable = mkEnableOption "AutoFirma";
     package = mkPackageOption inputs.self.packages.${system} "autofirma" {};
     finalPackage = mkOption {
       type = types.package;
@@ -21,7 +21,7 @@ in {
         literalExpression
         "`programs.autofirma.package` with applied configuration";
       description = mdDoc ''
-        The Autofirma package after applying configuration.
+        The AutoFirma package after applying configuration.
       '';
     };
 
@@ -38,7 +38,7 @@ in {
             description = "Profile name.";
           };
 
-          enable = mkEnableOption "Enable Autofirma in this firefox profile.";
+          enable = mkEnableOption "Enable AutoFirma in this firefox profile.";
         };
       }));
     };

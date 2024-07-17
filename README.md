@@ -14,7 +14,7 @@ Manager.
 $ nix run --accept-flake-config github:nilp0inter/autofirma-nix#dnieremote
 ```
 
-## Autofirma en NixOS y Home Manager
+## AutoFirma en NixOS y Home Manager
 
 Se proporciona un módulo de NixOS para habilitar AutoFirma en NixOS y otro para
 Home Manager. Sólo es necesario habilitar uno de ellos, dependiendo de si se

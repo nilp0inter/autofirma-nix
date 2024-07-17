@@ -102,19 +102,19 @@ in
     ];
 
     buildPhase = ''
-      cp -r ${clienteafirma-external-dependencies}/.m2 ./ && chmod -R u+w .m2
+      cp -r ${clienteafirma-external-dependencies}/.m2 . && chmod -R u+w .m2
 
-      mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests
+      mvn --offline package -Dmaven.repo.local=.m2/repository -DskipTests
     '';
 
     installPhase = ''
       mkdir -p $out/.m2/repository/es/gob/afirma/lib
 
-      rm -rf ./.m2/repository/es/gob/afirma/lib
+      rm -rf .m2/repository/es/gob/afirma/lib
 
-      mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests
+      mvn --offline install -Dmaven.repo.local=.m2/repository -DskipTests
 
-      rsync -av ./.m2/repository/es/gob/afirma/lib $out/.m2/repository/es/gob/afirma/
+      rsync -av .m2/repository/es/gob/afirma/lib $out/.m2/repository/es/gob/afirma/
 
       find $out -type f \( \
         -name \*.lastUpdated \

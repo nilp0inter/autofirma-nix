@@ -8,5 +8,4 @@ xmlstarlet \
 	--type elem \
 	-n "project.build.outputTimestamp" \
 	--value "1980-01-01T00:00:02Z" \
-	./pom.xml ./**/pom.xml
-
+	pom.xml ./**/pom.xml

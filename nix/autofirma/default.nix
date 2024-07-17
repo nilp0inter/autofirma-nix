@@ -147,7 +147,7 @@
     propagatedBuildInputs = [nss.tools];
 
     buildPhase = ''
-      cp -r ${clienteafirma-dependencies}/.m2 ./
+      cp -r ${clienteafirma-dependencies}/.m2 .
 
       rsync -av ${jmulticard}/.m2/repository/ \
                 ${clienteafirma-external}/.m2/repository/ \
@@ -155,9 +155,9 @@
 
       chmod -R u+w .m2
 
-      mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests -Denv=dev  # As in the dependencies derivation, some modules are only declared in the dev profile
-                                                                                       # but are needed in the install profile.
-      mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests -Denv=install
+      mvn --offline install -Dmaven.repo.local=.m2/repository -DskipTests -Denv=dev  # As in the dependencies derivation, some modules are only declared in the dev profile
+                                                                                     # but are needed in the install profile.
+      mvn --offline package -Dmaven.repo.local=.m2/repository -DskipTests -Denv=install
     '';
 
     installPhase = ''

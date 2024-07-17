@@ -102,19 +102,19 @@ in
     ];
 
     buildPhase = ''
-      cp -r ${jmulticard-dependencies}/.m2 ./ && chmod -R u+w .m2
+      cp -r ${jmulticard-dependencies}/.m2 . && chmod -R u+w .m2
 
-      mvn --offline package -Dmaven.repo.local=./.m2/repository -DskipTests
+      mvn --offline package -Dmaven.repo.local=.m2/repository -DskipTests
     '';
 
     installPhase = ''
       mkdir -p $out/.m2/repository/es/gob/afirma/jmulticard
 
-      rm -rf ./.m2/repository/es/gob/afirma/jmulticard
+      rm -rf .m2/repository/es/gob/afirma/jmulticard
 
-      mvn --offline install -Dmaven.repo.local=./.m2/repository -DskipTests
+      mvn --offline install -Dmaven.repo.local=.m2/repository -DskipTests
 
-      rsync -av ./.m2/repository/es/gob/afirma/jmulticard $out/.m2/repository/es/gob/afirma/
+      rsync -av .m2/repository/es/gob/afirma/jmulticard $out/.m2/repository/es/gob/afirma/
 
       find $out -type f \( \
         -name \*.lastUpdated \

@@ -24,4 +24,5 @@ jobs:
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote
     - run: nix flake check
-    - run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+    - if: github.event_name == 'push'
+      run: nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix

@@ -105,7 +105,7 @@
           default = self'.packages.autofirma;
         };
         checks = {
-          autofirma-sign = pkgs.runCommand "autofirma-sign" { } ''
+          autofirma-sign = pkgs.runCommand "autofirma-sign" {} ''
             mkdir -p $out
             echo "NixOS Autofirma Sign Test" > document.txt
 

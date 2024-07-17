@@ -7,4 +7,3 @@ writeShellApplication {
   runtimeInputs = [xmlstarlet];
   text = builtins.readFile ./remove-module-on-profile.sh;
 }
-

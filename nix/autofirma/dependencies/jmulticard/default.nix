@@ -7,7 +7,7 @@
   rsync,
   src-rev,
   src-hash,
-  maven-dependencies-hash ? ""
+  maven-dependencies-hash ? "",
 }: let
   name = "jmulticard";
 

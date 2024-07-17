@@ -11,7 +11,7 @@ Manager.
 
 ## Ejemplo de uso
 ```console
-$ nix run github:nilp0inter/autofirma-nix#dnieremote
+$ nix run --accept-flake-config github:nilp0inter/autofirma-nix#dnieremote
 ```
 
 ## Autofirma en NixOS y Home Manager
@@ -57,6 +57,15 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
       # url = "github:nilp0inter/autofirma-nix/release-24.05";  # Si estás usando NixOS 24.05
       inputs.nixpkgs.follows = "nixpkgs";
     };
+  };
+
+  nixConfig = {
+    extra-substituters = [
+      "https://autofirma-nix.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "autofirma-nix.cachix.org-1:cDC9Dtee+HJ7QZcM8s36836scXyRToqNX/T+yvjiI0E="
+    ];
   };
 
   outputs = {nixpkgs, home-manager, autofirma-nix, ...}: {

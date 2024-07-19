@@ -177,6 +177,15 @@ $ autofirma-setup
 
 Después es necesario reiniciar Firefox para que los cambios surtan efecto.
 
+### Desinstalación de certificados
+
+Si se desea desinstalar los certificados creados por `autofirma-setup`, se puede
+ejecutar el siguiente comando:
+
+```
+$ autofirma-setup --uninstall
+```
+
 ## Solución de problemas
 
 ### Los dispositivos de seguridad no parecen actualizarse

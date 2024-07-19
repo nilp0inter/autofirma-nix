@@ -142,6 +142,7 @@
       makeWrapper
       maven
       rsync
+      nss
     ];
 
     propagatedBuildInputs = [nss.tools];
@@ -178,9 +179,26 @@
 
       cat > $out/bin/autofirma-setup <<EOF
       #!${runtimeShell}
-      ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
-      chmod +x \$HOME/.afirma/AutoFirma/script.sh
-      \$HOME/.afirma/AutoFirma/script.sh
+      set -xe
+      if [[ "\$1" = "--uninstall" ]]; then
+        if [[ -f ~/.afirma/AutoFirma/uninstall.sh ]]; then
+          source ~/.afirma/AutoFirma/uninstall.sh
+          rm -f ~/.afirma/AutoFirma/{script.sh,uninstall.sh,autofirma.pfx,AutoFirma_ROOT.cer,AUTOFIRMA-SETUP-ROOT}
+        else
+          echo "AutoFirma is not installed"
+          exit 1
+        fi
+      else
+        rm -f ~/.afirma/AutoFirma/{script.sh,uninstall.sh,autofirma.pfx,AutoFirma_ROOT.cer,AUTOFIRMA-SETUP-ROOT}
+        ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
+        if [[ -f ~/.afirma/AutoFirma/script.sh ]]; then
+          source ~/.afirma/AutoFirma/script.sh
+          nix-store --add-root ~/.afirma/AutoFirma/AUTOFIRMA-SETUP-ROOT -r ${nss.tools}
+        else
+          echo "AutoFirma setup failed"
+          exit 1
+        fi
+      fi
       EOF
       chmod +x $out/bin/autofirma-setup
 

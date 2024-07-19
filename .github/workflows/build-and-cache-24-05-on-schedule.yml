@@ -24,10 +24,10 @@ jobs:
     - name: build autofirma-nix
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |
-        nix flake metadata --update-input nixpkgs
-        nix build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
-        nix flake check
-        nix build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
+        nix --accept-flake-config flake metadata --update-input nixpkgs
+        nix --accept-flake-config build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
+        nix --accept-flake-config flake check
+        nix --accept-flake-config build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
     - uses: tibdex/github-app-token@v1
       if: failure()
       id: generate-token
@@ -51,7 +51,7 @@ jobs:
           To test, run the following command:
 
           ```console
-          nix run github:nilp0inter/autofirma-nix/pull/<this_pr_number>/head#autofirma
+          nix --accept-flake-config run github:nilp0inter/autofirma-nix/pull/<this_pr_number>/head#autofirma
           ```
         add-paths: |
           nix/

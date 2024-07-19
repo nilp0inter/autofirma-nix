@@ -39,6 +39,7 @@ jobs:
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ steps.generate-token.outputs.token }}
+        branch: bot/update-release-24.05
         assignees: |
           nilp0inter
           CesarGallego

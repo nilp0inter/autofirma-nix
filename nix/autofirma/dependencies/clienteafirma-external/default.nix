@@ -21,12 +21,7 @@
       hash = src-hash;
     };
 
-    nativeBuildInputs = [
-      pom-tools.update-java-version
-      pom-tools.update-pkg-version
-      pom-tools.update-dependency-version-by-groupId
-      pom-tools.reset-project-build-timestamp
-    ];
+    nativeBuildInputs = [ pom-tools ];
 
     dontBuild = true;
 
@@ -98,7 +93,7 @@ in
     nativeBuildInputs = [
       maven
       rsync
-      pom-tools.reset-maven-metadata-local-timestamp
+      pom-tools
     ];
 
     buildPhase = ''

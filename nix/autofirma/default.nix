@@ -31,13 +31,7 @@
       hash = src-hash;
     };
 
-    nativeBuildInputs = [
-      pom-tools.update-java-version
-      pom-tools.update-pkg-version
-      pom-tools.update-dependency-version-by-groupId
-      pom-tools.remove-module-on-profile
-      pom-tools.reset-project-build-timestamp
-    ];
+    nativeBuildInputs = [ pom-tools ];
 
     patches = [
       ./patches/clienteafirma/detect_java_version.patch

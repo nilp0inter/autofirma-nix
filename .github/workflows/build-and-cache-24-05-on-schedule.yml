@@ -21,10 +21,10 @@ jobs:
       with:
         name: autofirma-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - name: Update nixpkgs
+    - name: Update flake
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |
-        nix --accept-flake-config flake metadata --update-input nixpkgs
+        nix --accept-flake-config flake update
     - name: Build autofirma updating. If new hashes are found update them
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |

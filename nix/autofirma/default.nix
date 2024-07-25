@@ -14,8 +14,7 @@
   jmulticard,
   clienteafirma-external,
   rsync,
-  src-rev,
-  src-hash,
+  src,
   maven-dependencies-hash ? "",
   disableJavaVersionCheck ? true,
   disableAutoFirmaVersionCheck ? true,
@@ -25,13 +24,7 @@
   clienteafirma-src = stdenv.mkDerivation {
     name = "clienteafirma-src";
 
-    src = fetchFromGitHub {
-      name = "clienteafirma";
-      owner = "ctt-gob-es";
-      repo = "clienteafirma";
-      rev = src-rev;
-      hash = src-hash;
-    };
+    inherit src;
 
     nativeBuildInputs = [ pom-tools ];
 
@@ -52,11 +45,11 @@
 
     postPatch = ''
       update-java-version "1.8"
-      update-pkg-version "${src-rev}-autofirma-nix"
+      update-pkg-version "${src.rev}-autofirma-nix"
 
       update-dependency-version-by-groupId "${clienteafirma-external.groupId}" "${clienteafirma-external.finalVersion}"
       update-dependency-version-by-groupId "${jmulticard.groupId}" "${jmulticard.finalVersion}"
-      update-dependency-version-by-groupId "es.gob.afirma" "${src-rev}-autofirma-nix"
+      update-dependency-version-by-groupId "es.gob.afirma" "${src.rev}-autofirma-nix"
 
       remove-module-on-profile "env-install" "afirma-server-triphase-signer"
       remove-module-on-profile "env-install" "afirma-signature-retriever"
@@ -130,7 +123,7 @@
 
   thisPkg = stdenv.mkDerivation {
     pname = name;
-    version = src-rev;
+    version = src.rev;
 
     src = clienteafirma-src;
 

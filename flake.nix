@@ -10,15 +10,38 @@
     ];
   };
 
+  # Common inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+  };
+
+  # Autofirma sources
+  inputs = {
+    jmulticard-src = {
+      url = "github:ctt-gob-es/jmulticard/v1.8";
+      flake = false;
+    };
+
+    clienteafirma-external-src = {
+      url = "github:ctt-gob-es/clienteafirma-external/OT_14395";
+      flake = false;
+    };
+
+    autofirma-src = {
+      url = "github:ctt-gob-es/clienteafirma/v1.8.3";
+      flake = false;
+    };
+
   };
 
   outputs = inputs @ {
     self,
     flake-parts,
     nixpkgs,
+    jmulticard-src,
+    clienteafirma-external-src,
+    autofirma-src,
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
@@ -74,24 +97,21 @@
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 
-            src-rev = "v1.8";
-            src-hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
+            src = jmulticard-src;
 
             maven-dependencies-hash = "sha256-qI6gYbGKTQ4Q4tV8NI37TSd3eQTyHHgndUGS943UvNU=";
           };
           clienteafirma-external = pkgs.callPackage ./nix/autofirma/dependencies/clienteafirma-external {
             inherit pom-tools;
 
-            src-rev = "OT_14395";
-            src-hash = "sha256-iS3I6zIxuKG133s/FqDlXZzOZ2ZOJcqZK9X6Tv3+3lc=";
+            src = clienteafirma-external-src;
 
             maven-dependencies-hash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
             inherit jmulticard clienteafirma-external pom-tools;
 
-            src-rev = "v1.8.3";
-            src-hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
+            src = autofirma-src;
 
             maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
           };

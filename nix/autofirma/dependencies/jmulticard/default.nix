@@ -5,8 +5,7 @@
   maven,
   pom-tools,
   rsync,
-  src-rev,
-  src-hash,
+  src,
   maven-dependencies-hash ? "",
 }: let
   name = "jmulticard";
@@ -14,12 +13,7 @@
   jmulticard-src = stdenv.mkDerivation {
     name = "${name}-src";
 
-    src = fetchFromGitHub {
-      owner = "ctt-gob-es";
-      repo = "jmulticard";
-      rev = src-rev;
-      hash = src-hash;
-    };
+    inherit src;
 
     nativeBuildInputs = [
       pom-tools
@@ -31,8 +25,8 @@
       find . -name '*.jar' -delete  # just in case
 
       update-java-version "1.8"
-      update-pkg-version "${src-rev}-autofirma-nix"
-      update-dependency-version-by-groupId "es.gob.afirma.jmulticard" "${src-rev}-autofirma-nix"
+      update-pkg-version "${src.rev}-autofirma-nix"
+      update-dependency-version-by-groupId "es.gob.afirma.jmulticard" "${src.rev}-autofirma-nix"
       reset-project-build-timestamp
     '';
 
@@ -85,10 +79,10 @@
 in
   stdenv.mkDerivation {
     pname = "${name}-m2-repository";
-    version = src-rev;
+    version = src.rev;
 
     groupId = "es.gob.afirma.jmulticard";
-    finalVersion = "${src-rev}-autofirma-nix";
+    finalVersion = "${src.rev}-autofirma-nix";
 
     src = jmulticard-src;
 

@@ -10,15 +10,38 @@
     ];
   };
 
+  # Common inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
+  };
+
+  # Autofirma sources
+  inputs = {
+    jmulticard-src = {
+      url = "github:ctt-gob-es/jmulticard/v1.8";
+      flake = false;
+    };
+
+    clienteafirma-external-src = {
+      url = "github:ctt-gob-es/clienteafirma-external/OT_14395";
+      flake = false;
+    };
+
+    autofirma-src = {
+      url = "github:ctt-gob-es/clienteafirma/v1.8.3";
+      flake = false;
+    };
+
   };
 
   outputs = inputs @ {
     self,
     flake-parts,
     nixpkgs,
+    jmulticard-src,
+    clienteafirma-external-src,
+    autofirma-src,
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
@@ -67,38 +90,28 @@
         ...
       }: let
         pkgs = nixpkgs.legacyPackages.${system};
-        pom-tools = {
-          update-java-version = pkgs.callPackage ./nix/pom-tools/update-java-version.nix {};
-          update-pkg-version = pkgs.callPackage ./nix/pom-tools/update-pkg-version.nix {};
-          update-dependency-version-by-groupId = pkgs.callPackage ./nix/pom-tools/update-dependency-version-by-groupId.nix {};
-          remove-module-on-profile = pkgs.callPackage ./nix/pom-tools/remove-module-on-profile.nix {};
-          reset-project-build-timestamp = pkgs.callPackage ./nix/pom-tools/reset-project-build-timestamp.nix {};
-          reset-maven-metadata-local-timestamp = pkgs.callPackage ./nix/pom-tools/reset-maven-metadata-local-timestamp.nix {};
-        };
       in {
         formatter = pkgs.alejandra;
         packages = rec {
+          pom-tools = pkgs.callPackage ./nix/pom-tools {};
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 
-            src-rev = "v1.8";
-            src-hash = "sha256-sCqMK4FvwRHsGIB6iQVyqrx0+EDiUfQSAsPqmDq2Giw=";
+            src = jmulticard-src;
 
             maven-dependencies-hash = "sha256-BH4aIhx6nWdSH1Wy3u6bEC4FvDKEPZd6qM4ujkEjD7g=";
           };
           clienteafirma-external = pkgs.callPackage ./nix/autofirma/dependencies/clienteafirma-external {
             inherit pom-tools;
 
-            src-rev = "OT_14395";
-            src-hash = "sha256-iS3I6zIxuKG133s/FqDlXZzOZ2ZOJcqZK9X6Tv3+3lc=";
+            src = clienteafirma-external-src;
 
             maven-dependencies-hash = "sha256-OLJqkNdtknJw8ZpsAbDOki5vK5+ctz3FYlEbdDkCHtY=";
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
             inherit jmulticard clienteafirma-external pom-tools;
 
-            src-rev = "v1.8.3";
-            src-hash = "sha256-GQyj3QuWIHTkYwdJ4oKVsG923YG9mCUXfhqdIvEWNMA=";
+            src = autofirma-src;
 
             maven-dependencies-hash = "sha256-fuXvnYIQn0ahY+Gl6wdlWNYH7NHykW1Bsz22O90suak=";
           };

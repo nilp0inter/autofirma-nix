@@ -24,7 +24,7 @@ jobs:
     - name: Update nixpkgs
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |
-        nix --accept-flake-config flake metadata --update-input nixpkgs
+        nix --accept-flake-config flake update
     - name: Build autofirma updating. If new hashes are found update them
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |

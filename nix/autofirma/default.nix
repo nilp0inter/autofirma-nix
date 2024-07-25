@@ -17,6 +17,8 @@
   src-rev,
   src-hash,
   maven-dependencies-hash ? "",
+  disableJavaVersionCheck ? true,
+  disableAutoFirmaVersionCheck ? true,
 }: let
   name = "autofirma";
 
@@ -37,7 +39,9 @@
       ./patches/clienteafirma/detect_java_version.patch
       ./patches/clienteafirma/pr-367.patch
       ./patches/clienteafirma/certutilpath.patch
-    ];
+    ] ++ (lib.optional disableJavaVersionCheck [
+      ./patches/clienteafirma/dont_check_java_version.patch
+    ]);
 
     dontBuild = true;
 
@@ -168,6 +172,7 @@
         --replace /usr/bin/autofirma $out/bin/autofirma
 
       makeWrapper ${jre}/bin/java $out/bin/autofirma \
+        --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
         --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
         --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 

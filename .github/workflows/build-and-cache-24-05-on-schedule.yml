@@ -21,21 +21,30 @@ jobs:
       with:
         name: autofirma-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - name: build autofirma-nix
+    - name: Update nixpkgs
       shell: /usr/bin/bash -o pipefail -e {0}
       run: |
         nix --accept-flake-config flake metadata --update-input nixpkgs
+    - name: Build autofirma updating. If new hashes are found update them
+      shell: /usr/bin/bash -o pipefail -e {0}
+      run: |
         nix --accept-flake-config build -L .#autofirma .#configuradorfnmt .#dnieremote 2>&1 | .github/workflows/replace_mismatching_hashes.pl
         nix --accept-flake-config flake check
-        nix --accept-flake-config build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix
-    - uses: tibdex/github-app-token@v1
+    - name: Try to compile autofirma again with new hashes
+      id: build-updated-autofirma
       if: failure()
+      shell: /usr/bin/bash -o pipefail -e {0}
+      run: |
+        nix --accept-flake-config build -L .#autofirma .#configuradorfnmt .#dnieremote
+        nix --accept-flake-config flake check
+    - uses: tibdex/github-app-token@v1
+      if: ${{ failure() && steps.build-updated-autofirma.conclusion == 'success' }}
       id: generate-token
       with:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
-    - name: Create Pull Request
-      if: failure()
+    - name: Create Pull Request for the new working hashes
+      if: ${{ failure() && steps.build-updated-autofirma.conclusion == 'success' }}
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ steps.generate-token.outputs.token }}
@@ -56,3 +65,8 @@ jobs:
         add-paths: |
           nix/
           flake.lock
+    - name: Upload to cachix
+      if: ${{ success() || steps.build-updated.autofirma.conclusion == 'success' }}
+      shell: /usr/bin/bash -o pipefail -e {0}
+      run: |
+        nix --accept-flake-config build --json .#autofirma .#configuradorfnmt .#dnieremote | jq -r '.[].outputs | to_entries[].value' | cachix push autofirma-nix

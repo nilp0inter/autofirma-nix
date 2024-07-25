@@ -174,6 +174,12 @@
       makeWrapper ${jre}/bin/java $out/bin/autofirma \
         --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
         --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
+        --add-flags "-Djdk.tls.maxHandshakeMessageSize=65536" \
+        --add-flags "-Djdk.gtk.version=3" \
+        --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
+        --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
+        --add-flags "-Dawt.useSystemAAFontSettings=on" \
+        --add-flags "-Dswing.aatext=true" \
         --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
       cat > $out/bin/autofirma-setup <<EOF

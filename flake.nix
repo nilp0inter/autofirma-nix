@@ -32,7 +32,6 @@
       url = "github:ctt-gob-es/clienteafirma/v1.8.3";
       flake = false;
     };
-
   };
 
   outputs = inputs @ {

@@ -26,15 +26,17 @@
 
     inherit src;
 
-    nativeBuildInputs = [ pom-tools ];
+    nativeBuildInputs = [pom-tools];
 
-    patches = [
-      ./patches/clienteafirma/detect_java_version.patch
-      ./patches/clienteafirma/pr-367.patch
-      ./patches/clienteafirma/certutilpath.patch
-    ] ++ (lib.optional disableJavaVersionCheck [
-      ./patches/clienteafirma/dont_check_java_version.patch
-    ]);
+    patches =
+      [
+        ./patches/clienteafirma/detect_java_version.patch
+        ./patches/clienteafirma/pr-367.patch
+        ./patches/clienteafirma/certutilpath.patch
+      ]
+      ++ (lib.optional disableJavaVersionCheck [
+        ./patches/clienteafirma/dont_check_java_version.patch
+      ]);
 
     dontBuild = true;
 

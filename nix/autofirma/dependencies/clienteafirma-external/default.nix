@@ -15,7 +15,7 @@
 
     inherit src;
 
-    nativeBuildInputs = [ pom-tools ];
+    nativeBuildInputs = [pom-tools];
 
     dontBuild = true;
 

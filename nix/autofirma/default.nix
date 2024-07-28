@@ -12,6 +12,7 @@
   pom-tools,
   jmulticard,
   clienteafirma-external,
+  autofirma-truststore,
   rsync,
   src,
   maven-dependencies-hash ? "",
@@ -171,7 +172,9 @@
 
       makeWrapper ${jre}/bin/java $out/bin/autofirma \
         --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
-        --add-flags "-Des.gob.afirma.keystores.mozilla.UseEnvironmentVariables=true" \
+        --add-flags "-Djavax.net.ssl.trustStore=${autofirma-truststore}" \
+        --add-flags "-Djavax.net.ssl.trustStoreType=PKCS12" \
+        --add-flags "-Djavax.net.ssl.trustStorePassword=autofirma" \
         --add-flags "-Djdk.tls.maxHandshakeMessageSize=65536" \
         --add-flags "-Djdk.gtk.version=3" \
         --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
@@ -220,8 +223,7 @@
     startupNotify = true;
     startupWMClass = "autofirma";
   };
-in
-  buildFHSEnv {
+in buildFHSEnv {
     name = name;
     inherit meta;
     targetPkgs = pkgs: [

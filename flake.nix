@@ -93,6 +93,7 @@
         formatter = pkgs.alejandra;
         packages = rec {
           pom-tools = pkgs.callPackage ./nix/pom-tools {};
+          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore { };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 
@@ -108,7 +109,7 @@
             maven-dependencies-hash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
           };
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
-            inherit jmulticard clienteafirma-external pom-tools;
+            inherit jmulticard clienteafirma-external pom-tools autofirma-truststore;
 
             src = autofirma-src;
 
@@ -116,15 +117,27 @@
           };
           default = self'.packages.autofirma;
         };
-        checks = {
-          # autofirma-sign = pkgs.runCommand "autofirma-sign" {} ''
+        checks = let
+          openssl = inputs.nixpkgs.lib.getExe pkgs.openssl;
+          autofirma = inputs.nixpkgs.lib.getExe self'.packages.autofirma;
+          curl = inputs.nixpkgs.lib.getExe pkgs.curl;
+          xmlstarlet = inputs.nixpkgs.lib.getExe pkgs.xmlstarlet;
+        in {
+          autofirma-sign = pkgs.runCommand "autofirma-sign" {} ''
+            mkdir -p $out
+            echo "NixOS AutoFirma Sign Test" > document.txt
+
+            ${openssl} req -x509 -newkey rsa:2048 -keyout private.key -out certificate.crt -days 365 -nodes -subj "/C=ES/O=TEST AUTOFIRMA NIX/OU=DNIE/CN=AC DNIE 004" -passout pass:1234
+            ${openssl} pkcs12 -export -out certificate.p12 -inkey private.key -in certificate.crt -name "testcert" -password pass:1234
+
+            ${autofirma} sign -store pkcs12:certificate.p12 -i document.txt -o document.txt.sign -filter alias.contains=testcert -password 1234 -xml
+          '';
+          # truststore-members = pkgs.runCommand "truststore-members" {} ''
           #   mkdir -p $out
-          #   echo "NixOS AutoFirma Sign Test" > document.txt
-          #
-          #   ${inputs.nixpkgs.lib.getExe pkgs.openssl} req -x509 -newkey rsa:2048 -keyout private.key -out certificate.crt -days 365 -nodes -subj "/C=ES/O=TEST AUTOFIRMA NIX/OU=DNIE/CN=AC DNIE 004" -passout pass:1234
-          #   ${inputs.nixpkgs.lib.getExe pkgs.openssl} pkcs12 -export -out certificate.p12 -inkey private.key -in certificate.crt -name "testcert" -password pass:1234
-          #
-          #   ${inputs.nixpkgs.lib.getExe self'.packages.autofirma} sign -store pkcs12:certificate.p12 -i document.txt -o document.txt.sign -filter alias.contains=testcert -password 1234 -xml
+
+          #   ${curl} -s --output $out/Prestadores.xml https://sedeaplicaciones.minetur.gob.es/PrestadoresDatosAbiertos/Prestadores.xml
+          #   ${xmlstarlet} sel -t -m '/PRESTADORES/PRESTADOR/SERVICIOS/SERVICIO/Clasificacion[text() = "Sede cualificado"]/../../../NombreSocial/text()' -c . -n $out/Prestadores.xml | sort | uniq > $out/cifs_prestadores_sede.txt
+
           # '';
         };
       };

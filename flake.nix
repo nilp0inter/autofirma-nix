@@ -93,6 +93,7 @@
         formatter = pkgs.alejandra;
         packages = rec {
           pom-tools = pkgs.callPackage ./nix/pom-tools {};
+          trusted-providers = pkgs.callPackage ./nix/tools/trusted-providers {};
           autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore { };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;

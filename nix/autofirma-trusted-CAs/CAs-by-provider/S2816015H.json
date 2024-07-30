@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "url": "https://sede.policia.gob.es/portalCiudadano/certs/ACRaiz.cer",
+    "hash": "sha256-wqsaf94krHI0vEdmRNOlS8ugK8pfe9CBFVgXorSX5ts=",
+    "curlOptsList": [
+      "--user-agent",
+      "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+    ]
+  }
+]

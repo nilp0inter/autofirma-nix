@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from urllib.parse import urljoin
 import argparse
 import json
@@ -8,12 +9,14 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+import requests
 
 
 def get_urls(url, driver):
@@ -40,21 +43,26 @@ def get_sri_hash(path):
                           capture_output=True, text=True).stdout.strip()
 
 
-def process_cert_url(cert_url):
+def process_cert_url(cert_url, user_agent, include_user_agent):
     print(f"Processing {cert_url}", file=sys.stderr)
-    result = subprocess.run(['nix-prefetch-url', '--type', 'sha256', '--print-path', cert_url], 
-                            capture_output=True, text=True)
 
-    match = re.search(r'^/.*', result.stdout, re.MULTILINE)
-    if not match:
-        print(f"Error processing {cert_url}: {result.stderr}", file=sys.stderr)
-        return None
-    else:
-        path = match.group(0)
+    with tempfile.NamedTemporaryFile() as tmp:
+        r = requests.get(cert_url, headers={'User-Agent': user_agent} if user_agent else None)
+        tmp.write(r.content)
+        tmp.flush()
+
+        path = tmp.name
 
         if is_self_signed(path):
             hash_value = get_sri_hash(path)
-            return {'url': cert_url, 'hash': hash_value}
+            result = {
+                'url': cert_url,
+                'hash': hash_value
+            }
+            if include_user_agent:
+                result['curlOptsList'] = [ '--user-agent', user_agent ]
+
+            return result
 
         return None  # Not self-signed
 
@@ -73,7 +81,11 @@ def main(args):
     results = []
     with ThreadPoolExecutor(max_workers=args.max_workers) as executor:
         try:
-            results = list(filter(None, executor.map(process_cert_url, get_urls(args.url, driver))))
+            results = list(filter(None, executor.map(
+                partial(process_cert_url,
+                        user_agent=args.user_agent,
+                        include_user_agent=args.include_user_agent),
+                get_urls(args.url, driver))))
         finally:
             driver.quit()
     
@@ -85,6 +97,7 @@ if __name__ == "__main__":
     parser.add_argument('--headless', action=argparse.BooleanOptionalAction, help='Run Chrome in headless mode', default=True)
     parser.add_argument('-n', '--max-workers', type=int, default=8, help='Maximum number of workers')
     parser.add_argument('--user-agent', help='User agent string to use', default='Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0')
+    parser.add_argument('-U', '--include-user-agent', action="store_true", help='Include user agent in curlOptsList')
 
     args = parser.parse_args()
 

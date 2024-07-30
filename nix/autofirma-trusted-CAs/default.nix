@@ -5,6 +5,7 @@
     fetchurl {
       url = trusted.cert.url;
       sha256 = trusted.cert.hash;
+      curlOptsList = trusted.cert.curlOptsList or [];
       meta = {inherit trusted;};
     };
 in

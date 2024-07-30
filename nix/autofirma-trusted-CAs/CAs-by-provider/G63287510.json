@@ -1,18 +1,18 @@
 [
   {
-    "url": "https://crl.anf.es/certificates-download/ANF_Global_Root_CA_SHA256_2036.cer",
-    "hash": "sha256-4K+9LA7pWmjNmjxZCy0/4HwKbQvnlq5SkeQk1HeSF44="
+    "hash": "sha256-4K+9LA7pWmjNmjxZCy0/4HwKbQvnlq5SkeQk1HeSF44=",
+    "url": "https://crl.anf.es/certificates-download/ANF_Global_Root_CA_SHA256_2036.cer"
   },
   {
-    "url": "https://crl.anf.es/certificates-download/ANFACSLRootCA.cer",
-    "hash": "sha256-+NhqlreyFcWoeJaXJkEE0pa0W1x5y0FY7pOhUOFNyaQ="
+    "hash": "sha256-+4/sdZFpuRBrHlEWRMYYxRMENz9sBkMIjYvv/RuZdZk=",
+    "url": "https://crl.anf.es/certificates-download/ANFSecureServerRootCA.cer"
   },
   {
-    "url": "https://crl.anf.es/certificates-download/ANFHighAssuranceEcuadorRootCA.cer",
-    "hash": "sha256-DzYdiyWBI+qbuE3T8sghwChUeWJuEYXhLxoEuFVG5Fk="
+    "hash": "sha256-DzYdiyWBI+qbuE3T8sghwChUeWJuEYXhLxoEuFVG5Fk=",
+    "url": "https://crl.anf.es/certificates-download/ANFHighAssuranceEcuadorRootCA.cer"
   },
   {
-    "url": "https://crl.anf.es/certificates-download/ANFSecureServerRootCA.cer",
-    "hash": "sha256-+4/sdZFpuRBrHlEWRMYYxRMENz9sBkMIjYvv/RuZdZk="
+    "hash": "sha256-+NhqlreyFcWoeJaXJkEE0pa0W1x5y0FY7pOhUOFNyaQ=",
+    "url": "https://crl.anf.es/certificates-download/ANFACSLRootCA.cer"
   }
 ]

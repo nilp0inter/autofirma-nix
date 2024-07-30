@@ -43,10 +43,13 @@ def get_sri_hash(path):
                           capture_output=True, text=True).stdout.strip()
 
 
-def process_cert_url(cert_url, user_agent, include_user_agent):
+def process_cert_url(cert_url, user_agent):
     print(f"Processing {cert_url}", file=sys.stderr)
 
-    with tempfile.NamedTemporaryFile() as tmp:
+    # Get extension from the URL
+    ext = os.path.splitext(cert_url)[1].lower()
+
+    with tempfile.NamedTemporaryFile(suffix=ext) as tmp:
         r = requests.get(cert_url, headers={'User-Agent': user_agent} if user_agent else None)
         tmp.write(r.content)
         tmp.flush()
@@ -55,16 +58,17 @@ def process_cert_url(cert_url, user_agent, include_user_agent):
 
         if is_self_signed(path):
             hash_value = get_sri_hash(path)
-            result = {
+            return {
                 'url': cert_url,
                 'hash': hash_value
             }
-            if include_user_agent:
-                result['curlOptsList'] = [ '--user-agent', user_agent ]
-
-            return result
 
         return None  # Not self-signed
+
+
+def escape_curl_opts(opts):
+    """Allow escaping dashes in curl options"""
+    return [re.sub(r'\\-', '-', opt) for opt in opts]
 
 
 def main(args):
@@ -82,14 +86,18 @@ def main(args):
     with ThreadPoolExecutor(max_workers=args.max_workers) as executor:
         try:
             results = list(filter(None, executor.map(
-                partial(process_cert_url,
-                        user_agent=args.user_agent,
-                        include_user_agent=args.include_user_agent),
+                partial(process_cert_url, user_agent=args.user_agent),
                 get_urls(args.url, driver))))
         finally:
             driver.quit()
     
-    print(json.dumps(results, indent=2))
+    uniq_items = [dict(i) for i in set(frozenset(i.items()) for i in results)]
+    if args.extra_curl_opts:
+        curl_opts = escape_curl_opts(args.extra_curl_opts)
+        for item in uniq_items:
+            item['curlOptsList'] = curl_opts 
+
+    print(json.dumps(uniq_items, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Download and hash certificates linked from a URL')
@@ -97,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument('--headless', action=argparse.BooleanOptionalAction, help='Run Chrome in headless mode', default=True)
     parser.add_argument('-n', '--max-workers', type=int, default=8, help='Maximum number of workers')
     parser.add_argument('--user-agent', help='User agent string to use', default='Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0')
-    parser.add_argument('-U', '--include-user-agent', action="store_true", help='Include user agent in curlOptsList')
+    parser.add_argument('--extra-curl-opts', action="append", help='Extra curl options to include in curlOptsList')
 
     args = parser.parse_args()
 

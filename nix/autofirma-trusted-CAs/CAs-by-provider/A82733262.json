@@ -1,10 +1,10 @@
 [
   {
-    "url": "https://psc.sia.es/ac_raiz.crt",
-    "hash": "sha256-TIy4l/7V/864eWzf73DB00BE8sUIXoXefOnIZ5iiniw="
+    "hash": "sha256-TIy4l/7V/864eWzf73DB00BE8sUIXoXefOnIZ5iiniw=",
+    "url": "https://psc.sia.es/ac_raiz.crt"
   },
   {
-    "url": "https://psc.sia.es/ac_raiz_2020.crt",
-    "hash": "sha256-IIGYh8BGniUXx2RhhBiPxCIbzJ2YtEBfE+imE6/nyuk="
+    "hash": "sha256-IIGYh8BGniUXx2RhhBiPxCIbzJ2YtEBfE+imE6/nyuk=",
+    "url": "https://psc.sia.es/ac_raiz_2020.crt"
   }
 ]

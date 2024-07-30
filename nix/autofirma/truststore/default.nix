@@ -1,9 +1,6 @@
 {
-  lib,
   stdenv,
   jre,
-  xmlstarlet,
-  curl,
   fetchurl,
   writeShellApplication,
   storepass ? "autofirma",

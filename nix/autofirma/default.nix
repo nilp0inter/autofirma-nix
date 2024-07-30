@@ -18,6 +18,7 @@
   maven-dependencies-hash ? "",
   disableJavaVersionCheck ? true,
   disableAutoFirmaVersionCheck ? true,
+  darkModeFix ? true,
 }: let
   name = "autofirma";
 
@@ -36,6 +37,9 @@
       ]
       ++ (lib.optional disableJavaVersionCheck [
         ./patches/clienteafirma/dont_check_java_version.patch
+      ])
+      ++ (lib.optional darkModeFix [
+        ./patches/clienteafirma/dark_mode_fix.patch
       ]);
 
     dontBuild = true;

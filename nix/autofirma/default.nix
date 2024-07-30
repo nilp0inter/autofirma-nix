@@ -18,6 +18,7 @@
   maven-dependencies-hash ? "",
   disableJavaVersionCheck ? true,
   disableAutoFirmaVersionCheck ? true,
+  darkModeFix ? true,
 }: let
   name = "autofirma";
 
@@ -36,6 +37,9 @@
       ]
       ++ (lib.optional disableJavaVersionCheck [
         ./patches/clienteafirma/dont_check_java_version.patch
+      ])
+      ++ (lib.optional darkModeFix [
+        ./patches/clienteafirma/dark_mode_fix.patch
       ]);
 
     dontBuild = true;
@@ -173,7 +177,7 @@
         --add-flags "-Djdk.gtk.version=3" \
         --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
         --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-        --add-flags "-Dawt.useSystemAAFontSettings=on" \
+        --add-flags "-Dawt.useSystemAAFontSettings=lcd" \
         --add-flags "-Dswing.aatext=true" \
         --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 

@@ -1,0 +1,24 @@
+diff --git a/afirma-simple/src/main/java/es/gob/afirma/standalone/ui/SignPanel.java b/afirma-simple/src/main/java/es/gob/afirma/standalone/ui/SignPanel.java
+index 0326b64ae..fc5f0bb33 100644
+--- a/afirma-simple/src/main/java/es/gob/afirma/standalone/ui/SignPanel.java
++++ b/afirma-simple/src/main/java/es/gob/afirma/standalone/ui/SignPanel.java
+@@ -856,7 +856,6 @@ public final class SignPanel extends JPanel implements LoadDataFileListener, Sig
+ 	            setBackground(LookAndFeelManager.DEFAULT_COLOR);
+ 	            introPanel.setBackground(LookAndFeelManager.DEFAULT_COLOR);
+ 	            selectPanel.setBackground(LookAndFeelManager.DEFAULT_COLOR);
+-	            welcomeLabel.setForeground(new Color(3399));
+ 	        }
+ 
+ 	    }
+diff --git a/afirma-ui-core-jse-keystores/src/main/java/es/gob/afirma/ui/core/jse/certificateselection/CertificateSelectionPanel.java b/afirma-ui-core-jse-keystores/src/main/java/es/gob/afirma/ui/core/jse/certificateselection/CertificateSelectionPanel.java
+index 2fefc5b66..ba7ffe688 100644
+--- a/afirma-ui-core-jse-keystores/src/main/java/es/gob/afirma/ui/core/jse/certificateselection/CertificateSelectionPanel.java
++++ b/afirma-ui-core-jse-keystores/src/main/java/es/gob/afirma/ui/core/jse/certificateselection/CertificateSelectionPanel.java
+@@ -151,7 +151,6 @@ final class CertificateSelectionPanel extends JPanel implements ListSelectionLis
+ 
+         if (!CertificateSelectionPanel.highContrast) {
+         	try {
+-        		mainMessage.setForeground(Color.decode("0x0033BC")); //$NON-NLS-1$
+         		windowColor = UIManager.getColor("window") != null ? //$NON-NLS-1$
+     	    			 new Color(UIManager.getColor("window").getRGB()) : //$NON-NLS-1$
+     	    			Color.WHITE;

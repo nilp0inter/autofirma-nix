@@ -96,7 +96,7 @@
           in rec {
           pom-tools = pkgs.callPackage ./nix/pom-tools {};
           download-autofirma-trusted-providers = pkgs.callPackage ./nix/tools/download-autofirma-trusted-providers {};
-          fetch-url-linked-CAs = pkgs.callPackage ./nix/tools/fetch-url-linked-CAs { };
+          download-url-linked-CAs = pkgs.callPackage ./nix/tools/download-url-linked-CAs { };
           autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore { trustedCerts = autofirma-trusted-CAs; };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;

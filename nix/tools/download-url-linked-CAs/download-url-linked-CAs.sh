@@ -1,3 +1,4 @@
+set -x
 URLS=$(curl -s --output - "$1" \
 	| htmlq a --base "$1" -B --attribute href \
 	| grep -P '\.(ce?rt|pem)$')

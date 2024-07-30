@@ -177,7 +177,7 @@
         --add-flags "-Djdk.gtk.version=3" \
         --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
         --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-        --add-flags "-Dawt.useSystemAAFontSettings=on" \
+        --add-flags "-Dawt.useSystemAAFontSettings=lcd" \
         --add-flags "-Dswing.aatext=true" \
         --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 

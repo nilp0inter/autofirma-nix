@@ -1,31 +1,28 @@
 {
+  lib,
   stdenv,
   jre,
-  fetchurl,
   writeShellApplication,
+  trustedCerts ? [],  # Trust no one. The trust is out there.
   storepass ? "autofirma",
 }: let
-  trusted-providers = builtins.fromJSON (builtins.readFile ./trusted-providers.json);
-  read-provider-certs = provider: builtins.map (cert: {inherit provider cert;}) (builtins.fromJSON (builtins.readFile ./cert-sources/${provider.cif}.json));
-  add-cert-to-truststore = trusted: let
-    cert = fetchurl {
-      url = trusted.cert.url;
-      hash = trusted.cert.hash;
-      meta = trusted.provider;
-    };
+  add-cert-to-truststore = cert: let
+    cif = lib.attrsets.attrByPath [ "meta" "trusted" "provider" "cif" ] "unknown-cif" cert;
+    url = lib.attrsets.attrByPath [ "meta" "trusted" "cert" "url" ] "unknown-url" cert;
+    alias = "${cif}-${url}";
   in
     writeShellApplication {
       name = "add-cert-to-truststore";
       runtimeInputs = [jre];
       text = ''
         set -x
-        ${jre}/bin/keytool -importcert -noprompt -alias "${trusted.provider.cif}-${trusted.cert.hash}" -keystore "$1" -storepass ${storepass} -file ${cert}
+        ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert}
       '';
     };
 in
   stdenv.mkDerivation {
     name = "autofirma-truststore";
-    srcs = builtins.map add-cert-to-truststore (builtins.concatMap read-provider-certs trusted-providers);
+    srcs = builtins.map add-cert-to-truststore trustedCerts;
     phases = ["buildPhase"];
     buildPhase = ''
       for _src in $srcs; do

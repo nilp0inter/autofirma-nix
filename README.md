@@ -133,6 +133,7 @@ desde un móvil Android usando DNIeRemote.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     autofirma-nix.url = "github:nilp0inter/autofirma-nix";
+    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.05";  # Si estás usando NixOS 24.05
   };
 
   outputs = { self, nixpkgs, autofirma-nix, ... }: {

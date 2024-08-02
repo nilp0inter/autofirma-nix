@@ -1,5 +1,5 @@
 {
-  description = "Un flake para integrar AutoFirma con Nix/NixOS";
+  description = "A Nix flake for AutoFirma and related Spanish e-signature tools.";
 
   nixConfig = {
     extra-substituters = [

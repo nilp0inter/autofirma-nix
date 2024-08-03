@@ -1,5 +1,6 @@
 inputs: {
   pkgs,
+  osConfig,
   config,
   lib,
   ...
@@ -8,6 +9,21 @@ with lib; let
   cfg = config.programs.autofirma;
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
+  options.programs.autofirma.truststore = {
+    package = mkPackageOption inputs.self.packages.${system} "autofirma-truststore" {};
+    enableGlobalAutoFirmaCAs = mkEnableOption "Add AutoFirma CAs to the system-wide trusted root certificates list";
+    finalPackage = mkOption {
+      type = types.package;
+      readOnly = true;
+      default = cfg.truststore.package;
+      defaultText =
+        literalExpression
+        "`programs.autofirma.truststore.package` with applied configuration";
+      description = mdDoc ''
+        The AutoFirma truststore package after applying configuration.
+      '';
+    };
+  };
   options.programs.autofirma = {
     enable = mkEnableOption "AutoFirma";
     package = mkPackageOption inputs.self.packages.${system} "autofirma" {};
@@ -15,6 +31,7 @@ in {
       type = types.package;
       readOnly = true;
       default = cfg.package.override {
+        autofirma-truststore = cfg.truststore.finalPackage;
         firefox = config.programs.firefox.package;
       };
       defaultText =

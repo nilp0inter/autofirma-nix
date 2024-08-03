@@ -4,8 +4,9 @@
   chromedriver,
   chromium,
   makeWrapper,
-  nix
-}: python3Packages.buildPythonApplication rec {
+  nix,
+}:
+python3Packages.buildPythonApplication rec {
   name = "download-url-linked-CAs";
   propagatedBuildInputs = [
     python3Packages.requests
@@ -25,4 +26,3 @@
       --set "CHROMEDRIVER_PATH" "${chromedriver}/bin/chromedriver"
   '';
 }
-

@@ -9,7 +9,6 @@
   nss,
   firefox,
   runtimeShell,
-  writeShellApplication,
   pom-tools,
   jmulticard,
   clienteafirma-external,
@@ -134,10 +133,7 @@
 
     src = clienteafirma-src;
 
-    inherit meta;
-
     nativeBuildInputs = [
-      makeWrapper
       maven
       rsync
       nss
@@ -164,25 +160,48 @@
       mkdir -p $out/bin $out/lib/AutoFirma
       install -Dm644 afirma-simple/target/AutoFirma.jar $out/lib/AutoFirma
       install -Dm644 afirma-ui-simple-configurator/target/AutoFirmaConfigurador.jar $out/lib/AutoFirma
+
+      runHook postInstall
+    '';
+  };
+
+  autofirma = stdenv.mkDerivation {
+    name = "autofirma";
+
+    src = clienteafirma-src;
+
+    inherit meta;
+
+    buildInputs = [
+      autofirma-jar
+      makeWrapper
+    ];
+
+    dontConfigure = true;
+    dontBuild = true;
+
+    installPhase = ''
+      mkdir -p $out/bin
+
       cp -r afirma-simple-installer/linux/instalador_deb/src/usr/lib $out
       cp -r afirma-simple-installer/linux/instalador_deb/src/usr/share $out
       cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
 
+      makeWrapper ${jre}/bin/java $out/bin/autofirma \
+        --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
+        --add-flags "-Djavax.net.ssl.trustStore=${autofirma-truststore}" \
+        --add-flags "-Djavax.net.ssl.trustStoreType=PKCS12" \
+        --add-flags "-Djavax.net.ssl.trustStorePassword=autofirma" \
+        --add-flags "-Djdk.tls.maxHandshakeMessageSize=65536" \
+        --add-flags "-Djdk.gtk.version=3" \
+        --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
+        --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
+        --add-flags "-Dawt.useSystemAAFontSettings=lcd" \
+        --add-flags "-Dswing.aatext=true" \
+        --add-flags "-jar ${autofirma-jar}/lib/AutoFirma/AutoFirma.jar"
+
       substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
         --replace-fail /usr/bin/autofirma $out/bin/autofirma
-
-      # makeWrapper ${jre}/bin/java $out/bin/autofirma \
-      #   --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
-      #   --add-flags "-Djavax.net.ssl.trustStore=${autofirma-truststore}" \
-      #   --add-flags "-Djavax.net.ssl.trustStoreType=PKCS12" \
-      #   --add-flags "-Djavax.net.ssl.trustStorePassword=autofirma" \
-      #   --add-flags "-Djdk.tls.maxHandshakeMessageSize=65536" \
-      #   --add-flags "-Djdk.gtk.version=3" \
-      #   --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-      #   --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-      #   --add-flags "-Dawt.useSystemAAFontSettings=lcd" \
-      #   --add-flags "-Dswing.aatext=true" \
-      #   --add-flags "-jar $out/lib/AutoFirma/AutoFirma.jar"
 
       cat > $out/bin/autofirma-setup <<EOF
       #!${runtimeShell}
@@ -209,7 +228,6 @@
       EOF
       chmod +x $out/bin/autofirma-setup
 
-      runHook postInstall
     '';
   };
 
@@ -218,51 +236,28 @@
     desktopName = "AutoFirma";
     genericName = "Herramienta de firma";
     exec = "autofirma %u";
-    icon = "${autofirma-jar}/lib/AutoFirma/AutoFirma.png";
+    icon = "${autofirma}/lib/AutoFirma/AutoFirma.png";
     mimeTypes = ["x-scheme-handler/afirma"];
     categories = ["Office" "X-Utilities" "X-Signature" "Java"];
     startupNotify = true;
     startupWMClass = "autofirma";
   };
-  
-  autofirma-launcher = stdenv.mkDerivation {
-    name = "autofirma-launcher";
-
-    phases = ["installPhase"];
-
-    installPhase = ''
-      mkdir -p $out/bin
-      makeWrapper ${jre}/bin/java $out/bin/autofirma \
-        --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \
-        --add-flags "-Djavax.net.ssl.trustStore=${autofirma-truststore}" \
-        --add-flags "-Djavax.net.ssl.trustStoreType=PKCS12" \
-        --add-flags "-Djavax.net.ssl.trustStorePassword=autofirma" \
-        --add-flags "-Djdk.tls.maxHandshakeMessageSize=65536" \
-        --add-flags "-Djdk.gtk.version=3" \
-        --add-flags "-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-        --add-flags "-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel" \
-        --add-flags "-Dawt.useSystemAAFontSettings=on" \
-        --add-flags "-Dswing.aatext=true" \
-        --add-flags "-jar ${autofirma-jar}/lib/AutoFirma/AutoFirma.jar"
-    '';
-    
-  };
-
-in buildFHSEnv {
+in
+  buildFHSEnv {
     name = name;
     inherit meta;
     targetPkgs = pkgs: [
       firefox
       pkgs.nss
     ];
-    runScript = lib.getExe autofirma-jar;
+    runScript = lib.getExe autofirma;
     extraInstallCommands = ''
       mkdir -p "$out/share/applications"
       cp "${desktopItem}/share/applications/"* $out/share/applications
 
       mkdir -p $out/etc/firefox/pref
-      ln -s ${autofirma-jar}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-      ln -s ${autofirma-jar}/bin/autofirma-setup $out/bin/autofirma-setup
+      ln -s ${autofirma}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+      ln -s ${autofirma}/bin/autofirma-setup $out/bin/autofirma-setup
     '';
     passthru = {
       inherit clienteafirma-src clienteafirma-dependencies;

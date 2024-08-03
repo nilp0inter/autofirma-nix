@@ -216,7 +216,7 @@
         fi
       else
         rm -f ~/.afirma/AutoFirma/{script.sh,uninstall.sh,autofirma.pfx,AutoFirma_ROOT.cer,AUTOFIRMA-SETUP-ROOT}
-        ${jre}/bin/java -jar $out/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
+        ${jre}/bin/java -jar ${autofirma-jar}/lib/AutoFirma/AutoFirmaConfigurador.jar -jnlp
         if [[ -f ~/.afirma/AutoFirma/script.sh ]]; then
           source ~/.afirma/AutoFirma/script.sh
           nix-store --add-root ~/.afirma/AutoFirma/AUTOFIRMA-SETUP-ROOT -r ${nss.tools}

@@ -3,12 +3,12 @@
   stdenv,
   jre,
   writeShellApplication,
-  trustedCerts ? [],  # Trust no one. The trust is out there.
+  trustedCerts ? [], # Trust no one. The trust is out there.
   storepass ? "autofirma",
 }: let
   add-cert-to-truststore = cert: let
-    cif = lib.attrsets.attrByPath [ "meta" "trusted" "provider" "cif" ] "unknown-cif" cert;
-    url = lib.attrsets.attrByPath [ "meta" "trusted" "cert" "url" ] "unknown-url" cert;
+    cif = lib.attrsets.attrByPath ["meta" "trusted" "provider" "cif"] "unknown-cif" cert;
+    url = lib.attrsets.attrByPath ["meta" "trusted" "cert" "url"] "unknown-url" cert;
     alias = "${cif}-${url}";
   in
     writeShellApplication {

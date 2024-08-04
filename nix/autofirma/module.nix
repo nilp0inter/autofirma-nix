@@ -45,11 +45,16 @@ in {
     firefoxIntegration.enable = mkEnableOption "Firefox integration";
   };
 
-  config.environment.systemPackages = mkIf cfg.enable (lib.warnIf cfg.fixJavaCerts "The option `programs.autofirma.fixJavaCerts` is deprecated and has no effect." [cfg.finalPackage]);
+  config.environment.systemPackages = mkIf cfg.enable (lib.warnIf cfg.fixJavaCerts "The option `programs.autofirma.fixJavaCerts` is deprecated." [cfg.finalPackage]);
 
   config.programs = mkIf cfg.enable {
     firefox = mkIf cfg.firefoxIntegration.enable {
       autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
     };
   };
+
+  config.security.pki.certificateFiles = mkIf (cfg.enable && cfg.truststore.enableGlobalAutoFirmaCAs) [
+    cfg.truststore.finalPackage.passthru.pemBundle
+  ];
+
 }

@@ -97,9 +97,8 @@
           pom-tools = pkgs.callPackage ./nix/tools/pom-tools {};
           download-autofirma-trusted-providers = pkgs.callPackage ./nix/tools/download-autofirma-trusted-providers {};
           download-url-linked-CAs = pkgs.callPackage ./nix/tools/download-url-linked-CAs {};
-          convert-cert-to-pem = pkgs.callPackage ./nix/tools/convert-cert-to-pem {};
           autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {
-            inherit convert-cert-to-pem;
+            # inherit convert-cert-to-pem;
             trustedCerts = autofirma-trusted-CAs;
           };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
@@ -128,8 +127,6 @@
         checks = let
           openssl = inputs.nixpkgs.lib.getExe pkgs.openssl;
           autofirma = inputs.nixpkgs.lib.getExe self'.packages.autofirma;
-          curl = inputs.nixpkgs.lib.getExe pkgs.curl;
-          xmlstarlet = inputs.nixpkgs.lib.getExe pkgs.xmlstarlet;
         in {
           autofirma-sign = pkgs.runCommand "autofirma-sign" {} ''
             mkdir -p $out
@@ -139,13 +136,7 @@
             ${openssl} pkcs12 -export -out certificate.p12 -inkey private.key -in certificate.crt -name "testcert" -password pass:1234
 
             ${autofirma} sign -store pkcs12:certificate.p12 -i document.txt -o document.txt.sign -filter alias.contains=testcert -password 1234 -xml
-          ''; # truststore-members = pkgs.runCommand "truststore-members" {} ''
-          #   mkdir -p $out
-
-          #   ${curl} -s --output $out/Prestadores.xml https://sedeaplicaciones.minetur.gob.es/PrestadoresDatosAbiertos/Prestadores.xml
-          #   ${xmlstarlet} sel -t -m '/PRESTADORES/PRESTADOR/SERVICIOS/SERVICIO/Clasificacion[text() = "Sede cualificado"]/../../../NombreSocial/text()' -c . -n $out/Prestadores.xml | sort | uniq > $out/cifs_prestadores_sede.txt
-
-          # '';
+          '';
         };
       };
     };

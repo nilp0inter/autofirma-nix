@@ -2,8 +2,9 @@
   lib,
   stdenv,
   jre,
-  openssl,
   writeShellApplication,
+  runCommand,
+  convert-cert-to-pem,
   trustedCerts ? [], # Trust no one. The trust is out there.
   storepass ? "autofirma",
 }: let
@@ -20,14 +21,9 @@
         ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert}
       '';
     };
-  to-pem-file = cert: stdenv.mkDerivation {
-    name = "${cert}.pem";
-    builInputs = [openssl];
-    phases = ["installPhase"];
-    installPhase = ''
-      ${lib.getExe openssl} pkcs12 -in "${cert}" -out "$out" -clcerts -nokeys
-    '';
-  };
+  to-pem-file = cert: runCommand "${cert.name}.pem" {} ''
+    ${lib.getExe convert-cert-to-pem} "${cert}" "$out"
+  '';
 in
   stdenv.mkDerivation {
     name = "autofirma-truststore";
@@ -39,6 +35,17 @@ in
       done
     '';
     passthru = {
-      certificateFiles = builtins.map to-pem-file trustedCerts;
+      certificateFiles = trustedCerts;
+      certificateFilesAsPEM = builtins.map to-pem-file trustedCerts;
+      certificateFilesAsPEM2 = stdenv.mkDerivation {
+        name = "autofirma-truststore-pem";
+        phases = ["buildPhase"];
+        buildPhase = ''
+          mkdir -p $out
+          for _src in $certificateFiles; do
+            ${lib.getExe convert-cert-to-pem} $_src $out/$(basename $_src).pem
+          done
+        '';
+      };
     };
   }

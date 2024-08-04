@@ -2,6 +2,7 @@
   lib,
   stdenv,
   jre,
+  openssl,
   writeShellApplication,
   trustedCerts ? [], # Trust no one. The trust is out there.
   storepass ? "autofirma",
@@ -19,6 +20,14 @@
         ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert}
       '';
     };
+  to-pem-file = cert: stdenv.mkDerivation {
+    name = "${cert}.pem";
+    builInputs = [openssl];
+    phases = ["installPhase"];
+    installPhase = ''
+      ${lib.getExe openssl} pkcs12 -in "${cert}" -out "$out" -clcerts -nokeys
+    '';
+  };
 in
   stdenv.mkDerivation {
     name = "autofirma-truststore";
@@ -29,4 +38,7 @@ in
         $_src/bin/add-cert-to-truststore $out
       done
     '';
+    passthru = {
+      certificateFiles = builtins.map to-pem-file trustedCerts;
+    };
   }

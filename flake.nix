@@ -97,7 +97,11 @@
           pom-tools = pkgs.callPackage ./nix/tools/pom-tools {};
           download-autofirma-trusted-providers = pkgs.callPackage ./nix/tools/download-autofirma-trusted-providers {};
           download-url-linked-CAs = pkgs.callPackage ./nix/tools/download-url-linked-CAs {};
-          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {trustedCerts = autofirma-trusted-CAs;};
+          convert-cert-to-pem = pkgs.callPackage ./nix/tools/convert-cert-to-pem {};
+          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {
+            inherit convert-cert-to-pem;
+            trustedCerts = autofirma-trusted-CAs;
+          };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 

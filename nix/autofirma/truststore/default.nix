@@ -21,9 +21,10 @@
         ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert}
       '';
     };
-  to-pem-file = cert: runCommand "${cert.name}.pem" {} ''
-    ${lib.getExe openssl} x509 -in ${cert} -out $out
-  '';
+  to-pem-file = cert:
+    runCommand "${cert.name}.pem" {} ''
+      ${lib.getExe openssl} x509 -in ${cert} -out $out
+    '';
 in
   stdenv.mkDerivation {
     name = "autofirma-truststore";
@@ -47,4 +48,3 @@ in
       };
     };
   }
-

@@ -203,3 +203,28 @@ Bastará con eliminarlo y reiniciar Firefox.
 $ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
 $ firefox
 ```
+
+### No aparecen los certificados aunque se haya solicitado el PIN del DNI-e
+Si OpenSC PKCS#11 te ha solicitado la contraseña pero no aparecen certificados disponibles para firmar, es probable que, al revisar los logs de Autofirma (ejecutándola desde una terminal), observes algo similar a lo siguiente:
+
+```console
+$ autofirma
+...
+INFO: El almacen externo 'OpenSC PKCS#11' ha podido inicializarse, se anadiran sus entradas y se detiene la carga del resto de almacenes
+...
+INFO: Se ocultara el certificado por no estar vigente: java.security.cert.CertificateExpiredException: NotAfter: Sat Oct 26 15:03:27 GMT 2024
+...
+INFO: Se ocultara el certificado por no estar vigente: java.security.cert.CertificateExpiredException: NotAfter: Sat Oct 26 15:03:27 GMT 2024
+...
+SEVERE: Se genero un error en el dialogo de seleccion de certificados: java.lang.reflect.InvocationTargetException
+....
+SEVERE: El almacen no contiene ningun certificado que se pueda usar para firmar: es.gob.afirma.keystores.AOCertificatesNotFoundException: No se han encontrado certificados validos en el almacen
+
+```
+Este problema ocurre porque tus certificados han caducado, como se indica en la fecha que aparece en el mensaje "NotAfter:".
+
+Si los certificados no están caducados porque los has renovado recientemente, pero usaste Autofirma antes de realizar esta renovación, es posible que OpenSC haya cacheado los certificados antiguos. Para solucionar esto, debes eliminar la caché de OpenSC. [De forma predeterminada, esta se encuentra en $HOME/.cache/opensc](https://github.com/OpenSC/OpenSC/wiki/Environment-variables).
+
+```console
+$ rm -rf $HOME/.cache/opensc
+```

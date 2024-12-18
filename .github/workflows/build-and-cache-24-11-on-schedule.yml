@@ -1,8 +1,8 @@
-name: release-24.05
+name: release-24.11
 
 on:
   schedule:
-    - cron: "5 0 * * *"
+    - cron: "11 0 * * *"
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: release-24.05
+        ref: release-24.11
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
@@ -48,12 +48,12 @@ jobs:
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ steps.generate-token.outputs.token }}
-        branch: bot/update-release-24.05
+        branch: bot/update-release-24.11
         assignees: |
           nilp0inter
           CesarGallego
         commit-message: 'fix: update derivation hashes & bump flake.lock'
-        title: 'Updated hashes for `release-24.05`'
+        title: 'Updated hashes for `release-24.11`'
         body: |
           This is an automatic update. Please test before merging!
           

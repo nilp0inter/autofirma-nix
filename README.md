@@ -1,6 +1,6 @@
 # autofirma-nix
 
-[![release-24.05](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-05-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-05-on-schedule.yml)
+[![release-24.11](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml)
 [![unstable](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml)
 
 Este repositorio contiene derivaciones de Nix, módulos de NixOS y Home Manager
@@ -52,7 +52,7 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 
     autofirma-nix = {
       url = "github:nilp0inter/autofirma-nix";  # Si estás usando NixOS unstable
-      # url = "github:nilp0inter/autofirma-nix/release-24.05";  # Si estás usando NixOS 24.05
+      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # Si estás usando NixOS 24.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -133,7 +133,7 @@ desde un móvil Android usando DNIeRemote.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     autofirma-nix.url = "github:nilp0inter/autofirma-nix";
-    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.05";  # Si estás usando NixOS 24.05
+    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.11";  # Si estás usando NixOS 24.11
   };
 
   outputs = { self, nixpkgs, autofirma-nix, ... }: {

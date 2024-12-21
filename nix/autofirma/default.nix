@@ -63,7 +63,7 @@
       reset-project-build-timestamp
 
       substituteInPlace afirma-ui-simple-configurator/src/main/java/es/gob/afirma/standalone/configurator/ConfiguratorFirefoxLinux.java \
-        --replace '@certutilpath' '${nss.tools}/bin/certutil'
+        --replace-fail '@certutilpath' '${nss.tools}/bin/certutil'
     '';
 
     dontFixup = true;
@@ -167,7 +167,7 @@
       cp -r afirma-simple-installer/linux/instalador_deb/src/etc $out
 
       substituteInPlace $out/etc/firefox/pref/AutoFirma.js \
-        --replace /usr/bin/autofirma $out/bin/autofirma
+        --replace-fail /usr/bin/autofirma $out/bin/autofirma
 
       makeWrapper ${jre}/bin/java $out/bin/autofirma \
         --set AUTOFIRMA_AVOID_UPDATE_CHECK ${lib.boolToString disableAutoFirmaVersionCheck} \

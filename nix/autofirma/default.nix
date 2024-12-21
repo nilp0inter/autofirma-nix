@@ -165,7 +165,7 @@
     '';
   };
 
-  autofirma = stdenv.mkDerivation {
+  thisPkg = stdenv.mkDerivation {
     name = "autofirma";
 
     src = clienteafirma-src;
@@ -236,7 +236,7 @@
     desktopName = "AutoFirma";
     genericName = "Herramienta de firma";
     exec = "autofirma %u";
-    icon = "${autofirma}/lib/AutoFirma/AutoFirma.png";
+    icon = "${thisPkg}/lib/AutoFirma/AutoFirma.png";
     mimeTypes = ["x-scheme-handler/afirma"];
     categories = ["Office" "X-Utilities" "X-Signature" "Java"];
     startupNotify = true;
@@ -250,14 +250,14 @@ in
       firefox
       pkgs.nss
     ];
-    runScript = lib.getExe autofirma;
+    runScript = lib.getExe thisPkg;
     extraInstallCommands = ''
       mkdir -p "$out/share/applications"
       cp "${desktopItem}/share/applications/"* $out/share/applications
 
       mkdir -p $out/etc/firefox/pref
-      ln -s ${autofirma}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
-      ln -s ${autofirma}/bin/autofirma-setup $out/bin/autofirma-setup
+      ln -s ${thisPkg}/etc/firefox/pref/AutoFirma.js $out/etc/firefox/pref/AutoFirma.js
+      ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
     '';
     passthru = {
       inherit clienteafirma-src clienteafirma-dependencies;

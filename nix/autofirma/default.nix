@@ -2,7 +2,6 @@
   lib,
   stdenv,
   buildFHSEnv,
-  fetchFromGitHub,
   jre,
   makeDesktopItem,
   makeWrapper,

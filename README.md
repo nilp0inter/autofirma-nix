@@ -187,6 +187,43 @@ ejecutar el siguiente comando:
 $ autofirma-setup --uninstall
 ```
 
+## Gestión de certificados en **autofirma-nix**
+
+El Gobierno publica una lista de proveedores de servicios autorizados. Cada proveedor ofrece, a su vez, varios certificados (de producción, de desarrollo, vigentes, caducados, etc.). **autofirma-nix** integra ambas fuentes de confianza:
+
+1. Descarga la lista oficial de proveedores y sus certificados.
+2. Incluirá únicamente aquellos certificados que NixOS reconozca en su *cacerts* local.
+
+De este modo, **autofirma-nix** se alinea automáticamente con la configuración de confianza del sistema. Las modificaciones que el usuario realice (por ejemplo, añadir o eliminar certificados en el *truststore*, o incluirlos en la lista negra) se verán reflejadas sin necesidad de acciones adicionales. Si un certificado no está reconocido localmente, **autofirma-nix** no lo incluirá, aunque aparezca en la lista oficial. Si el usuario lo excluye, dejará de permitir firmar en dominios que lo sirvan.
+
+### Opciones de NixOS relevantes
+
+Las siguientes opciones de NixOS determinan qué certificados se aceptan o bloquean en el *truststore* del sistema, y por tanto afectan directamente a **autofirma-nix**:
+
+- **`security.pki.certificateFiles`**  
+  Añade certificados adicionales al *truststore* global. Si alguno coincide con la lista oficial, **autofirma-nix** lo aceptará.
+
+- **`security.pki.caCertificateBlacklist`**  
+  Bloquea certificados específicos. Aunque estén en la lista oficial, se excluirán en **autofirma-nix** si aparecen en esta lista negra.
+
+**Ejemplo mínimo**:  
+```nix
+{
+  security.pki = {
+    certificateFiles = [
+      ./mi-certificado.crt
+    ];
+    caCertificateBlacklist = [
+      "Izenpe.com"
+    ];
+  };
+  programs.autofirma.enable = true;
+}
+```
+
+Si `./mi-certificado.crt` está en la lista oficial, se incluirá en autofirma-nix.
+En cambio, dado que `Izenpe.com` se bloquea, se ignorará aunque aparezca en la lista oficial.
+
 ## Solución de problemas
 
 ### Los dispositivos de seguridad no parecen actualizarse

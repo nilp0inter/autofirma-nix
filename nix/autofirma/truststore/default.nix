@@ -3,9 +3,10 @@
   openssl,
   stdenv,
   jre,
-  writeShellApplication,
+  writeShellScript,
   runCommand,
-  trustedCerts ? [], # Trust no one. The trust is out there.
+  caBundle,
+  govTrustedCerts ? [], # Trust no one. The trust is out there.
   storepass ? "autofirma",
 }: let
   add-cert-to-truststore = cert: let
@@ -13,36 +14,35 @@
     url = lib.attrsets.attrByPath ["meta" "trusted" "cert" "url"] "unknown-url" cert;
     alias = "${cif}-${url}";
   in
-    writeShellApplication {
-      name = "add-cert-to-truststore";
-      runtimeInputs = [jre];
-      text = ''
-        set -x
-        ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert}
-      '';
-    };
+    writeShellScript "add-cert-to-truststore" ''
+      ${openssl}/bin/openssl verify -CAfile ${caBundle} ${cert} && exec ${jre}/bin/keytool -importcert -noprompt -alias "${alias}" -keystore "$1" -storepass ${storepass} -file ${cert} || echo "Invalid cert or not present in ca-bundle."
+    '';
   to-pem-file = cert:
     runCommand "${cert.name}.pem" {} ''
-      ${lib.getExe openssl} x509 -in ${cert} -out $out
+      echo >> $out
+      echo "NAME: ${lib.attrsets.attrByPath ["meta" "trusted" "provider" "name"] "unknown-name" cert}" >> $out
+      echo "CIF: ${lib.attrsets.attrByPath ["meta" "trusted" "provider" "cif"] "unknown-cif" cert}" >> $out
+      echo "URL: ${lib.attrsets.attrByPath ["meta" "trusted" "cert" "url"] "unknown-url" cert}" >> $out
+      ${lib.getExe openssl} x509 -in ${cert} -out - >> $out
     '';
 in
   stdenv.mkDerivation {
     name = "autofirma-truststore";
-    srcs = builtins.map add-cert-to-truststore trustedCerts;
+    srcs = builtins.map add-cert-to-truststore govTrustedCerts;
     phases = ["buildPhase"];
     buildPhase = ''
-      for _src in $srcs; do
-        $_src/bin/add-cert-to-truststore $out
+      for addValidatedCertToTruststore in $srcs; do
+        $addValidatedCertToTruststore $out
       done
     '';
     passthru = {
       pemBundle = stdenv.mkDerivation {
         name = "autofirma-truststore-bundle.pem";
-        srcs = builtins.map to-pem-file trustedCerts;
+        srcs = builtins.map to-pem-file govTrustedCerts;
         phases = ["installPhase"];
         installPhase = ''
           for _src in $srcs; do
-            cat $_src >> $out
+            ${openssl}/bin/openssl verify -CAfile ${caBundle} $_src && cat $_src >> $out
           done
         '';
       };

@@ -92,15 +92,15 @@
       in {
         formatter = pkgs.alejandra;
         packages = let
-          autofirma-trusted-CAs = pkgs.callPackage ./nix/autofirma-trusted-CAs {};
+          prestadores = pkgs.callPackage ./nix/prestadores {};
+          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {
+            caBundle = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+            govTrustedCerts = prestadores;
+          };
         in rec {
           pom-tools = pkgs.callPackage ./nix/tools/pom-tools {};
           download-autofirma-trusted-providers = pkgs.callPackage ./nix/tools/download-autofirma-trusted-providers {};
           download-url-linked-CAs = pkgs.callPackage ./nix/tools/download-url-linked-CAs {};
-          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {
-            # inherit convert-cert-to-pem;
-            trustedCerts = autofirma-trusted-CAs;
-          };
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 

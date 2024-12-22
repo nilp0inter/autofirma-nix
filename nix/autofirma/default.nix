@@ -262,5 +262,6 @@ in
     passthru = {
       inherit clienteafirma-src clienteafirma-dependencies;
       autofirma-pkg = thisPkg;
+      truststore = autofirma-truststore;
     };
   }

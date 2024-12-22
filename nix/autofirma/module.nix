@@ -53,7 +53,4 @@ in {
     };
   };
 
-  config.security.pki.certificateFiles = mkIf (cfg.enable && cfg.truststore.enableGlobalAutoFirmaCAs) [
-    cfg.truststore.finalPackage.passthru.pemBundle
-  ];
 }

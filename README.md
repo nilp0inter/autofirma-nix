@@ -189,7 +189,7 @@ $ autofirma-setup --uninstall
 
 ## Solución de problemas
 
-### Los dispositivos de seguridad no parecen actualizarse
+### Los dispositivos de seguridad no parecen actualizarse o no aparecen
 
 Si se ha instalado AutoFirma y se ha habilitado la integración con Firefox, pero
 Firefox no detecta los dispositivos de seguridad, es posible que sea necesario
@@ -205,6 +205,7 @@ $ firefox
 ```
 
 ### No aparecen los certificados aunque se haya solicitado el PIN del DNI-e
+
 Si OpenSC PKCS#11 te ha solicitado la contraseña pero no aparecen certificados disponibles para firmar, es probable que, al revisar los logs de Autofirma (ejecutándola desde una terminal), observes algo similar a lo siguiente:
 
 ```console

@@ -32,7 +32,6 @@ in {
       readOnly = true;
       default = cfg.package.override {
         autofirma-truststore = cfg.truststore.finalPackage;
-
         firefox = config.programs.firefox.package;
       };
       defaultText =

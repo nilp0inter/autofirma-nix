@@ -11,11 +11,10 @@ with lib; let
 in {
   options.programs.autofirma.truststore = {
     package = mkPackageOption inputs.self.packages.${system} "autofirma-truststore" {};
-    enableGlobalAutoFirmaCAs = mkEnableOption "Add AutoFirma CAs to the system-wide trusted root certificates list";
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;
-      default = cfg.truststore.package;
+      default = cfg.truststore.package.override { caBundle = osConfig.environment.etc."ssl/certs/ca-certificates.crt".source; };
       defaultText =
         literalExpression
         "`programs.autofirma.truststore.package` with applied configuration";

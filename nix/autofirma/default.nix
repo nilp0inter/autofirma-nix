@@ -229,6 +229,16 @@
       chmod +x $out/bin/autofirma-setup
 
     '';
+
+    passthru = {
+      truststore = autofirma-truststore;
+      jar = autofirma-jar;
+      dependencies = {
+        clienteafirma = clienteafirma-dependencies;
+        jmulticard = jmulticard;
+        clienteafirma-external = clienteafirma-external;
+      };
+    };
   };
 
   desktopItem = makeDesktopItem {
@@ -260,8 +270,6 @@ in
       ln -s ${thisPkg}/bin/autofirma-setup $out/bin/autofirma-setup
     '';
     passthru = {
-      inherit clienteafirma-src clienteafirma-dependencies;
-      autofirma-pkg = thisPkg;
-      truststore = autofirma-truststore;
+      clienteafirma = thisPkg;
     };
   }

@@ -189,12 +189,12 @@ $ autofirma-setup --uninstall
 
 ## Gestión de certificados en **autofirma-nix**
 
-El Gobierno publica una lista de proveedores de servicios autorizados. Cada proveedor ofrece, a su vez, varios certificados (de producción, de desarrollo, vigentes, caducados, etc.). **autofirma-nix** integra ambas fuentes de confianza:
+El Gobierno publica una lista de proveedores de servicios autorizados, y cada uno de ellos ofrece varios certificados (de producción, desarrollo, vigentes, caducados, etc.). Para que **autofirma-nix** confíe en un certificado concreto, se exigen dos condiciones:
 
-1. Descarga la lista oficial de proveedores y sus certificados.
-2. Incluirá únicamente aquellos certificados que NixOS reconozca en su *cacerts* local.
+1. Que provenga de uno de estos proveedores oficiales.
+2. Que también aparezca en el *ca-bundle* (o *cacerts*) de NixOS.
 
-De este modo, **autofirma-nix** se alinea automáticamente con la configuración de confianza del sistema. Las modificaciones que el usuario realice (por ejemplo, añadir o eliminar certificados en el *truststore*, o incluirlos en la lista negra) se verán reflejadas sin necesidad de acciones adicionales. Si un certificado no está reconocido localmente, **autofirma-nix** no lo incluirá, aunque aparezca en la lista oficial. Si el usuario lo excluye, dejará de permitir firmar en dominios que lo sirvan.
+De este modo, **autofirma-nix** solo admite certificados reconocidos por ambos: el Gobierno y el sistema. Si el usuario bloquea o añade uno en la configuración de NixOS, esos cambios se aplican automáticamente a **autofirma-nix**. Si un certificado no está en el *ca-bundle* local, aunque lo publique un proveedor oficial, **autofirma-nix** no lo incluirá.
 
 ### Opciones de NixOS relevantes
 

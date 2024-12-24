@@ -5,12 +5,12 @@
   symlinkJoin,
 }: let
   scripts = {
-    update-java-version = ./scripts/update-java-version.sh;
-    update-pkg-version = ./scripts/update-pkg-version.sh;
-    update-dependency-version-by-groupId = ./scripts/update-dependency-version-by-groupId.sh;
-    remove-module-on-profile = ./scripts/remove-module-on-profile.sh;
-    reset-project-build-timestamp = ./scripts/reset-project-build-timestamp.sh;
-    reset-maven-metadata-local-timestamp = ./scripts/reset-maven-metadata-local-timestamp.sh;
+    update-java-version = ./lib/update-java-version.sh;
+    update-pkg-version = ./lib/update-pkg-version.sh;
+    update-dependency-version-by-groupId = ./lib/update-dependency-version-by-groupId.sh;
+    remove-module-on-profile = ./lib/remove-module-on-profile.sh;
+    reset-project-build-timestamp = ./lib/reset-project-build-timestamp.sh;
+    reset-maven-metadata-local-timestamp = ./lib/reset-maven-metadata-local-timestamp.sh;
   };
 in
   symlinkJoin {

@@ -187,6 +187,43 @@ ejecutar el siguiente comando:
 $ autofirma-setup --uninstall
 ```
 
+## Gestión de certificados en **autofirma-nix**
+
+El Gobierno publica una lista de proveedores de servicios autorizados, y cada uno de ellos ofrece varios certificados (de producción, desarrollo, vigentes, caducados, etc.). Para que **autofirma-nix** confíe en un certificado concreto, se exigen dos condiciones:
+
+1. Que provenga de uno de estos proveedores oficiales.
+2. Que también aparezca en el *ca-bundle* (o *cacerts*) de NixOS.
+
+De este modo, **autofirma-nix** solo admite certificados reconocidos por ambos: el Gobierno y el sistema. Si el usuario bloquea o añade uno en la configuración de NixOS, esos cambios se aplican automáticamente a **autofirma-nix**. Si un certificado no está en el *ca-bundle* local, aunque lo publique un proveedor oficial, **autofirma-nix** no lo incluirá.
+
+### Opciones de NixOS relevantes
+
+Las siguientes opciones de NixOS determinan qué certificados se aceptan o bloquean en el *truststore* del sistema, y por tanto afectan directamente a **autofirma-nix**:
+
+- **`security.pki.certificateFiles`**  
+  Añade certificados adicionales al *truststore* global. Si alguno coincide con la lista oficial, **autofirma-nix** lo aceptará.
+
+- **`security.pki.caCertificateBlacklist`**  
+  Bloquea certificados específicos. Aunque estén en la lista oficial, se excluirán en **autofirma-nix** si aparecen en esta lista negra.
+
+**Ejemplo mínimo**:  
+```nix
+{
+  security.pki = {
+    certificateFiles = [
+      ./mi-certificado.crt
+    ];
+    caCertificateBlacklist = [
+      "Izenpe.com"
+    ];
+  };
+  programs.autofirma.enable = true;
+}
+```
+
+Si `./mi-certificado.crt` está en la lista oficial, se incluirá en autofirma-nix.
+En cambio, dado que `Izenpe.com` se bloquea, se ignorará aunque aparezca en la lista oficial.
+
 ## Solución de problemas
 
 ### Los dispositivos de seguridad no parecen actualizarse o no aparecen

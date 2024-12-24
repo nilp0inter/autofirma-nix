@@ -91,8 +91,9 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         formatter = pkgs.alejandra;
-        packages = rec {
-          pom-tools = pkgs.callPackage ./nix/pom-tools {};
+        packages = let
+          prestadores = pkgs.callPackage ./nix/autofirma/truststore/prestadores {};
+          pom-tools = pkgs.callPackage ./nix/tools/pom-tools {};
           jmulticard = pkgs.callPackage ./nix/autofirma/dependencies/jmulticard {
             inherit pom-tools;
 
@@ -107,8 +108,15 @@
 
             maven-dependencies-hash = "sha256-N2lFeRM/eu/tMFTCQRYSHYrbXNgbAv49S7qTaUmb2+Q=";
           };
+        in rec {
+          autofirma-truststore = pkgs.callPackage ./nix/autofirma/truststore {
+            caBundle = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+            govTrustedCerts = prestadores;
+          };
+          download-autofirma-trusted-providers = pkgs.callPackage ./nix/tools/download-autofirma-trusted-providers {};
+          download-url-linked-CAs = pkgs.callPackage ./nix/tools/download-url-linked-CAs {};
           autofirma = pkgs.callPackage ./nix/autofirma/default.nix {
-            inherit jmulticard clienteafirma-external pom-tools;
+            inherit jmulticard clienteafirma-external pom-tools autofirma-truststore;
 
             src = autofirma-src;
 

@@ -8,6 +8,21 @@ with lib; let
   cfg = config.programs.autofirma;
   inherit (pkgs.stdenv.hostPlatform) system;
 in {
+  options.programs.autofirma.truststore = {
+    package = mkPackageOption inputs.self.packages.${system} "autofirma-truststore" {};
+    finalPackage = mkOption {
+      type = types.package;
+      readOnly = true;
+      default = cfg.truststore.package.override { caBundle = config.environment.etc."ssl/certs/ca-certificates.crt".source; };
+      defaultText =
+        literalExpression
+        "`programs.autofirma.truststore.package` with applied configuration";
+      description = mdDoc ''
+        The AutoFirma truststore package after applying configuration.
+      '';
+    };
+  };
+
   options.programs.autofirma = {
     enable = mkEnableOption "AutoFirma";
     fixJavaCerts = mkEnableOption "Fix Java certificates";
@@ -16,6 +31,7 @@ in {
       type = types.package;
       readOnly = true;
       default = cfg.package.override {
+        autofirma-truststore = cfg.truststore.finalPackage;
         firefox = config.programs.firefox.package;
       };
       defaultText =
@@ -27,32 +43,13 @@ in {
     };
     firefoxIntegration.enable = mkEnableOption "Firefox integration";
   };
-  config.environment.systemPackages = mkIf cfg.enable [cfg.finalPackage];
-  config.environment.variables = mkIf cfg.fixJavaCerts {
-    JAVAX_NET_SSL_TRUSTSTORE = let
-      caBundle = config.environment.etc."ssl/certs/ca-bundle.crt".source;
-      p11kit = pkgs.p11-kit.overrideAttrs (oldAttrs: {
-        configureFlags = [
-          "--with-trust-paths=${caBundle}"
-        ];
-      });
-    in
-      derivation {
-        name = "java-cacerts";
-        builder = pkgs.writeShellScript "java-cacerts-builder" ''
-          ${p11kit.bin}/bin/trust \
-            extract \
-            --format=java-cacerts \
-            --purpose=server-auth \
-            $out
-        '';
-        system = "x86_64-linux";
-      };
-  };
+
+  config.environment.systemPackages = mkIf cfg.enable (lib.warnIf cfg.fixJavaCerts "The option `programs.autofirma.fixJavaCerts` is deprecated." [cfg.finalPackage]);
 
   config.programs = mkIf cfg.enable {
     firefox = mkIf cfg.firefoxIntegration.enable {
       autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
     };
   };
+
 }

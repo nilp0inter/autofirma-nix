@@ -8,7 +8,7 @@ alongside NixOS and Home Manager modules for easy integration. These tools inclu
 
 - **AutoFirma** for digitally signing documents  
 - **DNIeRemote** for using an NFC-based national ID with an Android device as an NFC reader  
-- **FNMT Configurator** for securely requesting the personal certificate from the Spanish Royal Mint (**Fábrica Nacional de Moneda y Timbre**)  
+- **Configurador FNMT-RCM** for securely requesting the personal certificate from the Spanish Royal Mint (**Fábrica Nacional de Moneda y Timbre**)  
 
 ## Usage Example
 
@@ -34,7 +34,7 @@ signing PDF documents and configures the Firefox browser (if enabled through
 Additionally, you can enable DNIe integration, including NFC-based DNIe from an
 Android mobile via DNIeRemote.
 
-`autofirma-nix` provides a Home Manager module that you must import in your Home
+`autofirma-nix` provides a Home Manager module that you should import in your Home
 Manager configuration file. The setup may vary slightly depending on your Home
 Manager installation method. Below are examples for a standalone configuration.
 
@@ -51,8 +51,8 @@ Manager installation method. Below are examples for a standalone configuration.
     };
 
     autofirma-nix = {
-      url = "github:nilp0inter/autofirma-nix";  # If you're using NixOS unstable
-      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're using NixOS 24.11
+      url = "github:nilp0inter/autofirma-nix";  # If you're tracking NixOS unstable
+      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're tracking NixOS 24.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -85,7 +85,7 @@ Manager installation method. Below are examples for a standalone configuration.
   config = {
     programs.autofirma.enable = true;
     programs.autofirma.firefoxIntegration.profiles = {
-      miperfil = {  # The name of the Firefox profile where AutoFirma will be enabled
+      myprofile = {  # The name of the Firefox profile where AutoFirma will be enabled
         enable = true;
       };
     };
@@ -93,7 +93,7 @@ Manager installation method. Below are examples for a standalone configuration.
 
     programs.configuradorfnmt.enable = true;
     programs.configuradorfnmt.firefoxIntegration.profiles = {
-      miperfil = {  # The name of the Firefox profile where the FNMT Configurator will be enabled
+      myprofile = {  # The name of the Firefox profile where the FNMT Configurator will be enabled
         enable = true;
       };
     };
@@ -106,7 +106,7 @@ Manager installation method. Below are examples for a standalone configuration.
           "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # To use DNIe via NFC from an Android mobile
         };
       };
-      profiles.miperfil = {
+      profiles.myprofile = {
         id = 0;  # Makes this profile the default profile
         # ... Other configuration options for this profile
       };
@@ -174,7 +174,7 @@ the browser can communicate with AutoFirma. To do this, run the following comman
 $ autofirma-setup
 ```
 
-Afterward, restart Firefox for the changes to take effect.
+Afterwards, restart Firefox for the changes to take effect.
 
 ### Uninstalling Certificates
 
@@ -217,7 +217,7 @@ system *truststore*, directly affecting **autofirma-nix**:
 {
   security.pki = {
     certificateFiles = [
-      ./mi-certificado.crt
+      ./my-certificate.crt
     ];
     caCertificateBlacklist = [
       "Izenpe.com"
@@ -227,7 +227,7 @@ system *truststore*, directly affecting **autofirma-nix**:
 }
 ```
 
-If `./mi-certificado.crt` is on the official list, it will be included in autofirma-nix.
+If `./my-certificate.crt` is on the official list, it will be included in autofirma-nix.
 However, since `Izenpe.com` is blocked, it will be ignored even if it appears on the
 official list.
 
@@ -238,18 +238,18 @@ official list.
 If you have installed AutoFirma and enabled Firefox integration, but Firefox does not
 detect the security devices, you may need to remove the `pkcs11.txt` file from the
 Firefox profile folder. For instance, if you enabled the Home Manager module and the
-profile is named `miperfil`, the file is located in `~/.mozilla/firefox/miperfil/pkcs11.txt`.
+profile is named `myprofile`, the file is located in `~/.mozilla/firefox/myprofile/pkcs11.txt`.
 
 Removing it and restarting Firefox should solve the issue:
 
 ```console
-$ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
+$ rm ~/.mozilla/firefox/myprofile/pkcs11.txt
 $ firefox
 ```
 
-### Certificates do not appear even though the DNIe PIN was requested
+### Missing certificates even though the DNIe PIN was requested
 
-If OpenSC PKCS#11 prompted you for a password but no certificates are available for
+If OpenSC PKCS#11 prompts you for a password but no certificates are available for
 signing, you might see something like the following in the Autofirma logs (when
 running it from a terminal):
 

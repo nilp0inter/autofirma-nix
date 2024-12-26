@@ -18,7 +18,7 @@ in {
       defaultText =
         literalExpression
         "`programs.configuradorfnmt.package` with applied configuration";
-      description = mdDoc ''
+      description = ''
         The configuradorfnmt package after applying configuration.
       '';
     };

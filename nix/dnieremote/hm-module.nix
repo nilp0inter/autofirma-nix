@@ -18,7 +18,7 @@ in {
       defaultText =
         literalExpression
         "`programs.dnieremote.package` with applied configuration";
-      description = mdDoc ''
+      description = ''
         The DNIeRemote package after applying configuration.
       '';
     };

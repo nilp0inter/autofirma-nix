@@ -3,40 +3,40 @@
 [![release-24.11](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml)
 [![unstable](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml)
 
-Este repositorio contiene derivaciones de Nix, módulos de NixOS y Home Manager
-para integrar AutoFirma, DNIeRemote y el Configurador FNMT en NixOS y Home
-Manager.
+This repository provides a suite of tools needed to interact with Spain’s public administration,
+alongside NixOS and Home Manager modules for easy integration. These tools include:
 
+- **AutoFirma** for digitally signing documents  
+- **DNIeRemote** for using an NFC-based national ID with an Android device as an NFC reader  
+- **FNMT Configurator** for securely requesting the personal certificate from the Spanish Royal Mint (**Fábrica Nacional de Moneda y Timbre**)  
 
-## Ejemplo de uso
+## Usage Example
+
 ```console
 $ nix run --accept-flake-config github:nilp0inter/autofirma-nix#dnieremote
 ```
 
-## AutoFirma en NixOS y Home Manager
+## AutoFirma on NixOS and Home Manager
 
-Se proporciona un módulo de NixOS para habilitar AutoFirma en NixOS y otro para
-Home Manager. Sólo es necesario habilitar uno de ellos, dependiendo de si se
-quiere habilitar AutoFirma a nivel de sistema o de usuario.
+A NixOS module is provided to enable AutoFirma on NixOS and another one for Home Manager.
+You only need to enable one of them, depending on whether you want AutoFirma
+system-wide or at the user level.
 
-Una vez habilitado uno de los módulos, si se quiere utilizar AutoFirma en
-Firefox, es necesario ejecutar el comando `autofirma-setup` (ver más abajo).
+Once you have enabled one of these modules, if you want to use AutoFirma in Firefox,
+you must run the `autofirma-setup` command (see below).
 
+### Home Manager Configuration
 
-### Configuración de Home Manager
+The integration of AutoFirma in Home Manager enables the `autofirma` command for
+signing PDF documents and configures the Firefox browser (if enabled through
+`programs.firefox.enable`) to use AutoFirma on websites that require it.
 
-La integración de AutoFirma en Home Manager habilita el comando `autofirma` para
-el firmado de documentos PDF y configura el navegador Firefox (si está habilitado
-mediante la opción `programs.firefox.enable`) para que utilice AutoFirma en
-sitios web que lo requieran.
+Additionally, you can enable DNIe integration, including NFC-based DNIe from an
+Android mobile via DNIeRemote.
 
-Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
-desde un móvil Android usando DNIeRemote.
-
-`autofirma-nix` proporciona un módulo de Home Manager que debe ser importado en
-el fichero de configuración de Home Manager.  Dependiendo del tipo de
-instalación de Home Manager la configuración puede variar ligeramente.  A
-continuación se muestran ejemplos para una configuración de tipo standalone.
+`autofirma-nix` provides a Home Manager module that you must import in your Home
+Manager configuration file. The setup may vary slightly depending on your Home
+Manager installation method. Below are examples for a standalone configuration.
 
 ```nix
 # flake.nix
@@ -51,8 +51,8 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
     };
 
     autofirma-nix = {
-      url = "github:nilp0inter/autofirma-nix";  # Si estás usando NixOS unstable
-      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # Si estás usando NixOS 24.11
+      url = "github:nilp0inter/autofirma-nix";  # If you're using NixOS unstable
+      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're using NixOS 24.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -85,7 +85,7 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
   config = {
     programs.autofirma.enable = true;
     programs.autofirma.firefoxIntegration.profiles = {
-      miperfil = {  # El nombre del perfil de firefox donde se habilitará AutoFirma
+      miperfil = {  # The name of the Firefox profile where AutoFirma will be enabled
         enable = true;
       };
     };
@@ -93,7 +93,7 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
 
     programs.configuradorfnmt.enable = true;
     programs.configuradorfnmt.firefoxIntegration.profiles = {
-      miperfil = {  # El nombre del perfil de firefox donde se habilitará el Configurador FNMT
+      miperfil = {  # The name of the Firefox profile where the FNMT Configurator will be enabled
         enable = true;
       };
     };
@@ -102,29 +102,27 @@ continuación se muestran ejemplos para una configuración de tipo standalone.
       enable = true;
       policies = {
         SecurityDevices = {
-          "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-          "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+          "OpenSC PKCS11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # To use DNIe and other smart cards
+          "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # To use DNIe via NFC from an Android mobile
         };
       };
       profiles.miperfil = {
-        id = 0;  # Hace que este perfil sea el perfil por defecto
-        # ... El resto de opciones de configuración de este perfil
+        id = 0;  # Makes this profile the default profile
+        # ... Other configuration options for this profile
       };
     };
   };
 }
 ```
 
-### Configuración de NixOS
+### NixOS Configuration
 
-La integración de AutoFirma en NixOS habilita el comando `autofirma` para el
-firmado de documentos PDF y configura el navegador Firefox (si está habilitado
-mediante la opción `programs.firefox.enable`) para que utilice AutoFirma en
-sitios web que lo requieran.
+The AutoFirma integration in NixOS enables the `autofirma` command for signing PDF
+documents and configures the Firefox browser (if enabled through
+`programs.firefox.enable`) to use AutoFirma on websites that require it.
 
-Adicionalmente, se puede habilitar la integración con el DNIe y el DNIe por NFC
-desde un móvil Android usando DNIeRemote.
-
+Additionally, you can enable DNIe integration, including NFC-based DNIe from an
+Android mobile via DNIeRemote.
 
 ```nix
 # flake.nix
@@ -133,7 +131,7 @@ desde un móvil Android usando DNIeRemote.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     autofirma-nix.url = "github:nilp0inter/autofirma-nix";
-    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.11";  # Si estás usando NixOS 24.11
+    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're using NixOS 24.11
   };
 
   outputs = { self, nixpkgs, autofirma-nix, ... }: {
@@ -144,19 +142,19 @@ desde un móvil Android usando DNIeRemote.
         ({ pkgs, config, ... }: {
           programs.autofirma.enable = true;
           programs.autofirma.fixJavaCerts = true;
-          programs.autofirma.firefoxIntegration.enable = true;  # Para que Firefox utilice AutoFirma
+          programs.autofirma.firefoxIntegration.enable = true;  # Let Firefox use AutoFirma
 
           programs.dnieremote.enable = true;
 
           programs.configuradorfnmt.enable = true;
-          programs.configuradorfnmt.firefoxIntegration.enable = true;  # Para que Firefox utilice el Configurador FNMT
+          programs.configuradorfnmt.firefoxIntegration.enable = true;  # Let Firefox use the FNMT Configurator
 
           # Firefox
           programs.firefox.enable = true;
-          programs.firefox.policies =  {
+          programs.firefox.policies = {
             SecurityDevices = {
-              "OpenSC PKCS#11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # Para poder utilizar el DNIe, y otras tarjetas inteligentes
-              "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # Para poder utilizar el DNIe por NFC desde un móvil Android
+              "OpenSC PKCS#11" = "${pkgs.opensc}/lib/opensc-pkcs11.so";  # To use DNIe and other smart cards
+              "DNIeRemote" = "${config.programs.dnieremote.finalPackage}/lib/libdnieremotepkcs11.so";  # To use DNIe via NFC from an Android mobile
             };
           };
         })
@@ -166,47 +164,55 @@ desde un móvil Android usando DNIeRemote.
 }
 ```
 
-### Creación de certificados
+### Creating Certificates
 
-Una vez instalado y habilitado AutoFirma, es necesario crear un certificado
-para que el navegador pueda comunicarse con AutoFirma. Para ello, se debe ejecutar
-el siguiente comando (con Firefox abierto):
+Once AutoFirma is installed and enabled, you need to create a certificate so that
+the browser can communicate with AutoFirma. To do this, run the following command
+(with Firefox open):
 
 ```
 $ autofirma-setup
 ```
 
-Después es necesario reiniciar Firefox para que los cambios surtan efecto.
+Afterward, restart Firefox for the changes to take effect.
 
-### Desinstalación de certificados
+### Uninstalling Certificates
 
-Si se desea desinstalar los certificados creados por `autofirma-setup`, se puede
-ejecutar el siguiente comando:
+If you wish to uninstall the certificates created by `autofirma-setup`, you can run:
 
 ```
 $ autofirma-setup --uninstall
 ```
 
-## Gestión de certificados en **autofirma-nix**
+## Managing Certificates in **autofirma-nix**
 
-El Gobierno publica una lista de proveedores de servicios autorizados, y cada uno de ellos ofrece varios certificados (de producción, desarrollo, vigentes, caducados, etc.). Para que **autofirma-nix** confíe en un certificado concreto, se exigen dos condiciones:
+The Government publishes a list of authorized service providers, each offering various
+certificates (production, development, valid, expired, etc.). For **autofirma-nix** to
+trust a specific certificate, two conditions must be met:
 
-1. Que provenga de uno de estos proveedores oficiales.
-2. Que también aparezca en el *ca-bundle* (o *cacerts*) de NixOS.
+1. It must come from one of these official providers.
+2. It must also appear in the system’s *ca-bundle* (or *cacerts*) on NixOS.
 
-De este modo, **autofirma-nix** solo admite certificados reconocidos por ambos: el Gobierno y el sistema. Si el usuario bloquea o añade uno en la configuración de NixOS, esos cambios se aplican automáticamente a **autofirma-nix**. Si un certificado no está en el *ca-bundle* local, aunque lo publique un proveedor oficial, **autofirma-nix** no lo incluirá.
+This way, **autofirma-nix** only accepts certificates recognized by both the Government
+and the system. If the user blocks or adds one in the NixOS configuration, those changes
+are automatically applied to **autofirma-nix**. If a certificate is not in the local
+*ca-bundle*, even if an official provider publishes it, **autofirma-nix** will not include
+it.
 
-### Opciones de NixOS relevantes
+### Relevant NixOS Options
 
-Las siguientes opciones de NixOS determinan qué certificados se aceptan o bloquean en el *truststore* del sistema, y por tanto afectan directamente a **autofirma-nix**:
+The following NixOS options determine which certificates are accepted or blocked in the
+system *truststore*, directly affecting **autofirma-nix**:
 
 - **`security.pki.certificateFiles`**  
-  Añade certificados adicionales al *truststore* global. Si alguno coincide con la lista oficial, **autofirma-nix** lo aceptará.
+  Adds additional certificates to the global *truststore*. If any match the official list,
+  **autofirma-nix** will accept them.
 
 - **`security.pki.caCertificateBlacklist`**  
-  Bloquea certificados específicos. Aunque estén en la lista oficial, se excluirán en **autofirma-nix** si aparecen en esta lista negra.
+  Blocks specific certificates. Even if they are on the official list, **autofirma-nix** will
+  exclude them if they appear in this blacklist.
 
-**Ejemplo mínimo**:  
+**Minimal Example**:
 ```nix
 {
   security.pki = {
@@ -221,29 +227,31 @@ Las siguientes opciones de NixOS determinan qué certificados se aceptan o bloqu
 }
 ```
 
-Si `./mi-certificado.crt` está en la lista oficial, se incluirá en autofirma-nix.
-En cambio, dado que `Izenpe.com` se bloquea, se ignorará aunque aparezca en la lista oficial.
+If `./mi-certificado.crt` is on the official list, it will be included in autofirma-nix.
+However, since `Izenpe.com` is blocked, it will be ignored even if it appears on the
+official list.
 
-## Solución de problemas
+## Troubleshooting
 
-### Los dispositivos de seguridad no parecen actualizarse o no aparecen
+### Security devices do not seem to update or do not appear
 
-Si se ha instalado AutoFirma y se ha habilitado la integración con Firefox, pero
-Firefox no detecta los dispositivos de seguridad, es posible que sea necesario
-eliminar el fichero `pkcs11.txt` de la carpeta de perfil de Firefox. Por ejemplo,
-si se activa el módulo de Home Manager y su perfil se llama `miperfil`, el fichero
-se encontrará en `~/.mozilla/firefox/miperfil/pkcs11.txt`.
+If you have installed AutoFirma and enabled Firefox integration, but Firefox does not
+detect the security devices, you may need to remove the `pkcs11.txt` file from the
+Firefox profile folder. For instance, if you enabled the Home Manager module and the
+profile is named `miperfil`, the file is located in `~/.mozilla/firefox/miperfil/pkcs11.txt`.
 
-Bastará con eliminarlo y reiniciar Firefox.
+Removing it and restarting Firefox should solve the issue:
 
 ```console
 $ rm ~/.mozilla/firefox/miperfil/pkcs11.txt
 $ firefox
 ```
 
-### No aparecen los certificados aunque se haya solicitado el PIN del DNI-e
+### Certificates do not appear even though the DNIe PIN was requested
 
-Si OpenSC PKCS#11 te ha solicitado la contraseña pero no aparecen certificados disponibles para firmar, es probable que, al revisar los logs de Autofirma (ejecutándola desde una terminal), observes algo similar a lo siguiente:
+If OpenSC PKCS#11 prompted you for a password but no certificates are available for
+signing, you might see something like the following in the Autofirma logs (when
+running it from a terminal):
 
 ```console
 $ autofirma
@@ -257,11 +265,14 @@ INFO: Se ocultara el certificado por no estar vigente: java.security.cert.Certif
 SEVERE: Se genero un error en el dialogo de seleccion de certificados: java.lang.reflect.InvocationTargetException
 ....
 SEVERE: El almacen no contiene ningun certificado que se pueda usar para firmar: es.gob.afirma.keystores.AOCertificatesNotFoundException: No se han encontrado certificados validos en el almacen
-
 ```
-Este problema ocurre porque tus certificados han caducado, como se indica en la fecha que aparece en el mensaje "NotAfter:".
 
-Si los certificados no están caducados porque los has renovado recientemente, pero usaste Autofirma antes de realizar esta renovación, es posible que OpenSC haya cacheado los certificados antiguos. Para solucionar esto, debes eliminar la caché de OpenSC. [De forma predeterminada, esta se encuentra en $HOME/.cache/opensc](https://github.com/OpenSC/OpenSC/wiki/Environment-variables).
+This occurs because your certificates have expired, as indicated by the “NotAfter:” date.
+
+If the certificates are not expired because you recently renewed them, but you used
+AutoFirma before this renewal, it is possible that OpenSC has cached your old certificates.
+To fix this, you need to delete the OpenSC cache. [By default, it is located at
+$HOME/.cache/opensc](https://github.com/OpenSC/OpenSC/wiki/Environment-variables).
 
 ```console
 $ rm -rf $HOME/.cache/opensc

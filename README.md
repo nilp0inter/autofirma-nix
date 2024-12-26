@@ -1,7 +1,7 @@
 # autofirma-nix
 
-[![release-24.11](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml)
-[![unstable](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml/badge.svg)](https://github.com/nilp0inter/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml)
+[![release-24.11](https://github.com/nix-community/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml/badge.svg)](https://github.com/nix-community/autofirma-nix/actions/workflows/build-and-cache-24-11-on-schedule.yml)
+[![unstable](https://github.com/nix-community/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml/badge.svg)](https://github.com/nix-community/autofirma-nix/actions/workflows/build-and-cache-unstable-on-schedule.yml)
 
 This repository provides a suite of tools needed to interact with Spain’s public administration,
 alongside NixOS and Home Manager modules for easy integration. These tools include:
@@ -13,7 +13,7 @@ alongside NixOS and Home Manager modules for easy integration. These tools inclu
 ## Usage Example
 
 ```console
-$ nix run --accept-flake-config github:nilp0inter/autofirma-nix#dnieremote
+$ nix run --accept-flake-config github:nix-community/autofirma-nix#dnieremote
 ```
 
 ## AutoFirma on NixOS and Home Manager
@@ -51,8 +51,8 @@ Manager installation method. Below are examples for a standalone configuration.
     };
 
     autofirma-nix = {
-      url = "github:nilp0inter/autofirma-nix";  # If you're tracking NixOS unstable
-      # url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're tracking NixOS 24.11
+      url = "github:nix-community/autofirma-nix";  # If you're tracking NixOS unstable
+      # url = "github:nix-community/autofirma-nix/release-24.11";  # If you're tracking NixOS 24.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -130,8 +130,8 @@ Android mobile via DNIeRemote.
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    autofirma-nix.url = "github:nilp0inter/autofirma-nix";
-    # autofirma-nix.url = "github:nilp0inter/autofirma-nix/release-24.11";  # If you're using NixOS 24.11
+    autofirma-nix.url = "github:nix-community/autofirma-nix";
+    # autofirma-nix.url = "github:nix-community/autofirma-nix/release-24.11";  # If you're using NixOS 24.11
   };
 
   outputs = { self, nixpkgs, autofirma-nix, ... }: {

@@ -18,7 +18,7 @@ in {
       defaultText =
         literalExpression
         "`programs.autofirma.truststore.package` with applied configuration";
-      description = mdDoc ''
+      description = ''
         The AutoFirma truststore package after applying configuration.
       '';
     };
@@ -36,7 +36,7 @@ in {
       defaultText =
         literalExpression
         "`programs.autofirma.package` with applied configuration";
-      description = mdDoc ''
+      description = ''
         The AutoFirma package after applying configuration.
       '';
     };

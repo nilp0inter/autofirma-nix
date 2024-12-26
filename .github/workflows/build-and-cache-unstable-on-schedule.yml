@@ -73,7 +73,7 @@ jobs:
             To test, run the following command:
 
             ```console
-            nix --accept-flake-config run github:nilp0inter/autofirma-nix/pull/<this_pr_number>/head#autofirma
+            nix --accept-flake-config run github:nix-community/autofirma-nix/pull/<this_pr_number>/head#autofirma
             ```
           add-paths: |
             nix/

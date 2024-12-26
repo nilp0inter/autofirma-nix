@@ -48,7 +48,9 @@ in {
 
   config.programs = mkIf cfg.enable {
     firefox = mkIf cfg.firefoxIntegration.enable {
-      autoConfig = builtins.readFile "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js";
+      autoConfigFiles = lib.mkAfter [
+        "${cfg.finalPackage}/etc/firefox/pref/AutoFirma.js"
+      ];
     };
   };
 

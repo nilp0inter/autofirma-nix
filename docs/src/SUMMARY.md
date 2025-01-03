@@ -5,9 +5,6 @@
 - [Installation](./installation.md)
   - [NixOS Module](./installation_nixos_module.md)
   - [Home-Manager Module](./installation_home_manager_module.md)
-- [Configuration](./configuration.md)
-  - [NixOS Module](./configuration_nixos_module.md)
-  - [Home-Manager Module](./configuration_home_manager_module.md)
 - [Troubleshooting](./troubleshooting.md)
 
 # Reference

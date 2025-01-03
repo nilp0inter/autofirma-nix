@@ -141,7 +141,6 @@ Android mobile via DNIeRemote.
         autofirma-nix.nixosModules.default
         ({ pkgs, config, ... }: {
           programs.autofirma.enable = true;
-          programs.autofirma.fixJavaCerts = true;
           programs.autofirma.firefoxIntegration.enable = true;  # Let Firefox use AutoFirma
 
           programs.dnieremote.enable = true;

@@ -1,6 +1,15 @@
 {
   description = "A Nix flake for AutoFirma and related Spanish e-signature tools.";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://autofirma-nix.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "autofirma-nix.cachix.org-1:cDC9Dtee+HJ7QZcM8s36836scXyRToqNX/T+yvjiI0E="
+    ];
+  };
+
   # Common inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

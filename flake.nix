@@ -13,6 +13,7 @@
   # Common inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
@@ -38,6 +39,7 @@
     self,
     flake-parts,
     nixpkgs,
+    home-manager,
     jmulticard-src,
     clienteafirma-external-src,
     autofirma-src,
@@ -122,6 +124,7 @@
 
             maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
           };
+          docs = import ./docs { inherit pkgs inputs; inherit (nixpkgs) lib; };
           default = self'.packages.autofirma;
         };
         checks = {

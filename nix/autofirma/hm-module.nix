@@ -57,6 +57,7 @@ in {
           enable = mkEnableOption "Enable AutoFirma in this firefox profile.";
         };
       }));
+      description = "Firefox profiles to integrate AutoFirma with.";
     };
   };
   config = mkIf cfg.enable {

@@ -1,18 +1,10 @@
 {
   description = "A Nix flake for AutoFirma and related Spanish e-signature tools.";
 
-  nixConfig = {
-    extra-substituters = [
-      "https://autofirma-nix.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "autofirma-nix.cachix.org-1:cDC9Dtee+HJ7QZcM8s36836scXyRToqNX/T+yvjiI0E="
-    ];
-  };
-
   # Common inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
@@ -38,6 +30,7 @@
     self,
     flake-parts,
     nixpkgs,
+    home-manager,
     jmulticard-src,
     clienteafirma-external-src,
     autofirma-src,
@@ -122,6 +115,7 @@
 
             maven-dependencies-hash = "sha256-zPWjBu1YtN0U9+wy/WG0NWg1EsO3MD0nhnkUsV7h6Ew=";
           };
+          docs = import ./docs { inherit pkgs inputs; inherit (nixpkgs) lib; };
           default = self'.packages.autofirma;
         };
         checks = {

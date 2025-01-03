@@ -39,6 +39,7 @@ in {
           enable = mkEnableOption "Enable configuradorfnmt in this firefox profile.";
         };
       }));
+      description = "Firefox profiles to integrate configuradorfnmt with.";
     };
   };
   config = mkIf cfg.enable {
